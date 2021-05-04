@@ -30,7 +30,9 @@
         <h3 class="flow-text"><i class="material-icons">info</i> Document Information</h3>
         <div class="btn-icons">
           {!! Form::open() !!}
+          @can('edit')
           <a href="/documents/{{ $doc->id }}/edit" class="btn-circle teal waves-effect waves-light tooltipped" data-position="left" data-delay="50" data-tooltip="Edit this"><i class="material-icons">mode_edit</i></a>
+          @endcan
           <a href="/documents/open/{{ $doc->id }}" class="btn-circle blue darken-3 waves-effect waves-light tooltipped" data-position="top" data-delay="50" data-tooltip="Open this"><i class="material-icons">open_with</i></a>
           {!! Form::close() !!}
           <!-- SHARE using link -->

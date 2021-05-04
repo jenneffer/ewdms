@@ -14,7 +14,7 @@
         <div class="divider"></div>
       </div>
       <div class="row">
-        <div class="col m8 s12">
+        <div class="col m12 s12">
           {!! Form::open(['action' => 'DocumentsController@store', 'method' => 'POST', 'enctype' => 'multipart/form-data', 'class' => 'col s12']) !!}
             {{ csrf_field() }}
           <div class="card hoverable">
@@ -68,23 +68,31 @@
                 @endif
               </div> --}} -->
 
-              <div class="input-field">
-                <i class="material-icons prefix">class</i>
-                <select name="parent_id" class="form-control">
-                    <option value="" default>Select Category</option>
-                    @foreach ($categories_name as $key => $value)
-                        <option value="{{ $key }}">{{ $value }}</option>
-                    @endforeach
-                    <label for="title">Category (Optional)</label>
-                </select>
-            </div>
-            <div class="input-field">
-                <i class="material-icons prefix">class</i>
-                <select name="child_id" class="form-control"></select>
-                <label for="title">Sub Category</label>
-            </div>
+              <div class="row">
+                <div class="col s4 input-field">
+                  <i class="material-icons prefix">class</i>
+                  <select name="parent_id" class="form-control">
+                      <option value="" default>Select Category</option>
+                      @foreach ($categories_name as $key => $value)
+                          <option value="{{ $key }}">{{ $value }}</option>
+                      @endforeach
+                      <label for="title">Category (Optional)</label>
+                  </select>
+                </div>
+                <div class="col s4 input-field">
+                    <i class="material-icons prefix">class</i>
+                    <select name="child_id" class="form-control"></select>
+                    <label for="title">Sub Category</label>
+                </div>
+                <div class="col s4 input-field further_child">
+                    <i class="material-icons prefix">class</i>
+                    <select name="further_child_id" class="form-control"></select>
+                    <label for="title">Further Sub Category</label>
+                </div>
+              </div>
+            
               <br>
-              {{--<div class="file-field input-field">
+              <!-- {{--<div class="file-field input-field">
                 <div class="btn white">
                   <span class="black-text">Choose File (Max: 50MB)</span>
                   {{ Form::file('file') }}
@@ -95,18 +103,18 @@
                 <div class="file-path-wrapper">
                   <input class="file-path validate" type="text">
                 </div>
-              </div>--}}
+              </div>--}} -->
               <br>
               <div class="input-field">
                 <p class="center">
-                  {{ Form::submit('Save',['class' => 'btn-large waves-effect waves-light']) }}
+                  {{ Form::submit('Save',['class' => 'waves-effect waves-light btn']) }}
                 </p>
               </div>
             </div>
           </div>
           {!! Form::close() !!}
         </div>
-        <div class="col m4 hide-on-med-and-down">
+        <!-- <div class="col m4 hide-on-med-and-down">
           <div class="card-panel teal">
             <h4>Notice</h4>
             <p>
@@ -116,7 +124,7 @@
               </ul>
             </p>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -140,11 +148,35 @@
                                 key + '" >' + value + '</option>');
 
                         });
-                        $('select[name="child_id"]').material_select();
+                        $('select[name="child_id"]').material_select();  
+                                      
+                    }
+                });
+
+            } else {
+                $('select[name="child_id"]').empty();                
+            }
+        });
+        $('select[name="child_id"]').on('change', function() {
+            var stateID = $(this).val();
+            if (stateID) {
+                $.ajax({
+                    url: '../getChildCat/' + stateID,
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        $('select[name="further_child_id"]').empty();
+                        $('select[name="further_child_id"]').append('<option value="">Select further Sub Category</option>');
+                        $.each(data, function(key, value) {
+                            $('select[name="further_child_id"]').append('<option value="' +
+                                key + '" >' + value + '</option>');
+
+                        });
+                        $('select[name="further_child_id"]').material_select();
                     }
                 });
             } else {
-                $('select[name="child_id"]').empty();
+                $('select[name="further_child_id"]').empty();
             }
         });
     });

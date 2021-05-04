@@ -22,14 +22,57 @@
               {{ Form::text('name', $permissions->name, ['class' => 'validate', 'id' => 'permission_name']) }}
               <label for="permission_name">Permission Title</label>
             </div>      
+          </div>          
+          <div class="row">
+            <div class="input-field">
+                <i class="material-icons prefix">class</i>
+                <select name="parent_id" class="form-control">
+                    <option value="" default>Select Category</option>
+                    @foreach ($p_cat_name as $key => $value)
+                        @if ($cat->parent_id == 0)
+                            <option value="{{ $key }}" {{ $key == $permissions->category_id ? 'selected' : '' }}>{{ $value }}</option>                       
+                        @else
+                          <option value="{{ $key }}" {{$key == $cat->parent_id ? 'selected' : ''}}>{{ $value }}</option> 
+                        @endif
+                    @endforeach
+                </select>
+                <label for="title">Category</label>
+            </div>
           </div>
           <div class="row">
-            <div class="col m6 input-field">
-              <i class="material-icons prefix">class</i>
-              {{ Form::text('guard_name', $permissions->guard_name, ['class' => 'validate', 'id' => 'guard_name']) }}
-              <label for="guard_name">Guard Name</label>
-            </div>      
+            <div class="input-field">
+                <i class="material-icons prefix">class</i>
+                <select name="subcat_id" class="form-control">
+                    <option value="" default>Select Sub Category</option>
+                    @foreach ($sub_cat_name as $key => $value)
+                        @if ($cat->child_id == 0)
+                            <option value="{{ $key }}"{{ $key == $permissions->category_id ? 'selected' : '' }}>{{ $value }}</option>
+                        @else
+                            <option value="{{ $key }}">{{ $value }}</option>
+                        @endif
+                    @endforeach
+                </select>
+                <label for="title">Sub Category</label>
+            </div>
           </div>
+          <!-- <div class="row">
+            <div class="input-field">
+                <i class="material-icons prefix">class</i>
+                <select name="child_id" class="form-control">
+                    <option value="" default>Select Child Category</option>
+                    @foreach ($child_list as $key => $value)
+                        @if ((!$parent_id == 0) || (!$cat->child_id == 0))
+                            <option value="{{ $key }}"
+                                {{ $key == $permissions->category_id ? 'selected' : '' }}>
+                                {{ $value }}</option>
+                        @else
+                            <option value="{{ $key }}">{{ $value }}</option>
+                        @endif
+                    @endforeach
+                </select>
+                <label for="title">Sub Category</label>
+            </div>
+          </div> -->
           <div class="row">
             <div class="col m6 input-field">
               {{ Form::submit('Save Changes', ['class' => 'btn waves-effect waves-light']) }}

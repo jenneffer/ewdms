@@ -58,6 +58,12 @@ Route::get('mydocuments','DocumentsController@mydocuments');
 Route::get('/trash','DocumentsController@trash');
 Route::get('documents/restore/{id}','DocumentsController@restore');
 Route::delete('documentsDeleteMulti','DocumentsController@deleteMulti');
+
+//test-jen
+Route::get('documents/category/{id}','DocumentsController@showCategoryItem')->name('document.category');
+Route::get('documents/category/{id}/subcategory','DocumentsController@showSubCategoryItem')->name('document.subcategory');
+Route::get('documents/category/{parent_id}/subcategory/{id}','DocumentsController@showSubCategoryChildItem')->name('document.subcategory.child');
+
 // search
 Route::post('/search','DocumentsController@search');
 // sort
@@ -83,3 +89,7 @@ Route::get('logs','LogController@log');
 Route::get('logsdel','LogController@logdel');
 
 
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

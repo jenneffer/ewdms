@@ -44,7 +44,7 @@
                     @endif
                   </td>
                   <td>
-                    @can('read')
+                    @can('my_document_view')
                     {!! Form::open() !!}                    
                     <a href="documents/{{ $doc->id }}" class="tooltipped" data-position="left" data-delay="50" data-tooltip="View Details"><i class="material-icons">visibility</i></a>
                     {!! Form::close() !!}
@@ -53,17 +53,23 @@
                     {!! Form::close() !!}
                     @endcan
                     {!! Form::open() !!}
-                    @can('download')
+                    @can('my_document_download')
                     <a href="documents/download/{{ $doc->id }}" class="tooltipped" data-position="left" data-delay="50" data-tooltip="Download"><i class="material-icons">file_download</i></a>
                     @endcan
                     {!! Form::close() !!}
-                    {!! Form::open() !!}
-                    @can('shared')
+                    <!-- {!! Form::open() !!}
+                    @can('my_document_shared')
                     <a href="#" class="tooltipped" data-position="left" data-delay="50" data-tooltip="Share"><i class="material-icons">share</i></a>
+                    @endcan
+                    {!! Form::close() !!} -->
+                    <!-- SHARE using link -->
+                    {!! Form::open(['action' => ['ShareController@update', $doc->id], 'method' => 'PATCH', 'id' => 'form-share-documents-' . $doc->id]) !!}
+                    @can('my_document_shared')
+                    <a href="#" class="data-share tooltipped" data-position="top" data-delay="50" data-tooltip="Share this" data-form="documents-{{ $doc->id }}"><i class="material-icons">share</i></a>
                     @endcan
                     {!! Form::close() !!}
                     {!! Form::open() !!}
-                    @can('edit')
+                    @can('my_document_edit')
                     <a href="documents/{{ $doc->id }}/edit" class="tooltipped" data-position="left" data-delay="50" data-tooltip="Edit"><i class="material-icons">mode_edit</i></a>
                     @endcan
                     {!! Form::close() !!}
@@ -71,7 +77,7 @@
                     {!! Form::open(['action' => ['DocumentsController@destroy', $doc->id],
                     'method' => 'DELETE',
                     'id' => 'form-delete-documents-' . $doc->id]) !!}
-                    @can('delete')
+                    @can('my_document_delete')
                     <a href="" class="data-delete tooltipped" data-position="left" data-delay="50" data-tooltip="Delete" data-form="documents-{{ $doc->id }}"><i class="material-icons">delete</i></a>
                     @endcan
                     {!! Form::close() !!}

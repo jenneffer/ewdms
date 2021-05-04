@@ -25,19 +25,42 @@ class DocumentsController extends Controller
    */
   public function index()
   {
+    if (auth()->user()->hasRole('Root')) {
+      // get all
+      $docs = Document::where('isExpire', '!=', 2)->get();
+      
+    } else {
+      // get user's docs
+      // $user_id = auth()->user()->id;
+
+      // $docs = Document::where('user_id',$user_id)->get();
+
+      // get docs in dept
+      $dept_id = auth()->user()->department_id;
+
+      // get user role_id
+      $user_role_id = auth()->user()->role;
+      $arr_category = $this->getCategoryPermissions($user_role_id);
+      // $docs = Document::where('isExpire', '!=', 2)->where('department_id', $dept_id)->where('user_id', '!=', auth()->user()->id)->get();
+      // $docs = Document::where('isExpire', '!=', 2)->where('user_id', '!=', auth()->user()->id)->get();
+      $docs = Document::where('isExpire', '!=', 2)->where('user_id', '!=', auth()->user()->id)->whereIn('category_id',$arr_category)->get();
+
+      
+    }    
+    $docs->load('category');
     
-      if (auth()->user()->hasRole('Root')) {
-        // get all category
-        $category = DB::table('category')->where('parent_id',0)->get();
-        
-      } else {
-        $user_role_id = auth()->user()->role;      
-        $arr_category = $this->getCategoryPermissions($user_role_id); //category id yang user boleh access
-        $permisible_parent_access = array_filter(array_unique($arr_category),'strlen'); //filter duplicate value and remove null value in the array
-        //get the parent category yang user tu boleh access saja
-        $category = DB::table('category')->where('parent_id',0)->whereIn('id', $permisible_parent_access)->get();
-      }
-    return view('documents.category', compact('category'));
+    //group by category 
+    $doc_by_category = [];
+    foreach($docs as $doc){
+      $doc_by_category[$doc->category_id][] = array(
+        'doc_id' => $doc->id,
+        'doc_mimetype' => $doc->mimetype,
+        'doc_name' => $doc->name,
+        'doc_category_name' => $doc->category->name,
+      );
+    }    
+    $filetype = null;
+    return view('documents.index', compact('docs', 'filetype','doc_by_category'));
   }
 
   // my documents
@@ -101,17 +124,7 @@ class DocumentsController extends Controller
     $doc->description = $request->input('description');
     $doc->user_id = $user_id;
     $doc->department_id = $department_id;
-    // $category_id = (!empty($request->input('child_id'))) ? $request->input('child_id') : $request->input('parent_id');
-    if(!empty($request->input('further_child_id'))){
-      $category_id = $request->input('further_child_id');      
-    }
-    elseif(!empty($request->input('child_id'))){
-      $category_id = $request->input('child_id');   
-    }
-    else{
-      $category_id = $request->input('parent_id');
-    }
-    
+    $category_id = (!empty($request->input('child_id'))) ? $request->input('child_id') : $request->input('parent_id');
     $doc->category_id = $category_id;
     /*$doc->file = $path;
         $doc->mimetype = Storage::mimeType($path);
@@ -280,19 +293,13 @@ class DocumentsController extends Controller
   public function download($id)
   {
     $doc = Document::findOrFail($id);
-    $image = file_get_contents("https://nxg.box.com/s/0l2dj77jkbaz6ve6g0xnjp7x3qbjwstb");
+    $path = Storage::disk('local')->getDriver()->getAdapter()->applyPathPrefix($doc->file);
+    $type = $doc->mimetype;
 
-
-    file_put_contents(public_path('images\mobile.txt'), $image);
-
-    // $path = Storage::disk('local')->getDriver()->getAdapter()->applyPathPrefix($doc->file);
-
-    // $type = $doc->mimetype;
-
-    // \Log::addToLog('Document ID ' . $id . ' was downloaded');
+    \Log::addToLog('Document ID ' . $id . ' was downloaded');
 
     // return response()->download($path, $doc->name, ['Content-Type:' . $type]);
-    // return response()->download($path);
+    return response()->download($path);
   }
 
   // searching
@@ -365,32 +372,15 @@ class DocumentsController extends Controller
 
   //check category id punya parent_id
 
-  public function showCategoryItem($id){
-      $arr_cat_same_parent = $this->arr_cat_from_same_parent($id);
-      if (auth()->user()->hasRole('Root')) {
-        // get all
-        $docs = Document::where('isExpire', '!=', 2)->whereIn('category_id', $arr_cat_same_parent)->get();
-        
-      } else {
-        $user_role_id = auth()->user()->role;      
-        $arr_category = $this->getCategoryPermissions($user_role_id); //category id yang user boleh access            
-        //category id $id or parent_id is $id
-        $docs = DB::table('document')->where('user_id', '!=', auth()->user()->id)->whereIn('category_id',$arr_category)->whereIn('category_id', $arr_cat_same_parent)->get();
-        
-      }
-      $filetype = null;
-      return view('documents.index', compact('docs', 'filetype','id'));
+  public function showByCategory(){
+    var_dump('$test');
+    $user_role_id = auth()->user()->role;
+    $arr_category = $this->getCategoryPermissions($user_role_id);
+    var_dump($arr_category);
+    $category = DB::table('category')->where('parent_id',0)->get();
+    return view('documents.category',$category);
   }
 
-  public function showSubCategoryItem($id){
-    $subcategory = DB::table('category')->where('parent_id',$id)->where('child_id',0)->get();
-    return view('documents.subcategory', compact('subcategory'));
-  }
-
-  public function showSubCategoryChildItem($parent_id,$id){    
-    $subcategoryItem = DB::table('category')->where('parent_id',$parent_id)->where('child_id',$id)->get();    
-    return view('documents.subcategory-item', compact('subcategoryItem'));
-  }
   public function getCategoryPermissions($user_role_id){
     //get role's permissions      
     $permissions = DB::table('role_has_permissions')->where('role_id','=', $user_role_id)->get();      
@@ -402,19 +392,10 @@ class DocumentsController extends Controller
     $categories = DB::table('permissions')->whereIn('id',$permissionIDs)->get();
     $arr_category = [];      
     foreach($categories as $c){
-        $arr_category[] = $c->category_id;
+      $arr_category[] = $c->category_id;
     }
-    return $arr_category;
-  }
 
-  public function arr_cat_from_same_parent($id){
-    $result = DB::table('category')->where('parent_id', $id)->orWhere('id', $id)->get();
-    $IDs = [];
-    foreach($result as $res){   
-     
-      $IDs[] = $res->id;
-    }
-    return $IDs;
+    return $arr_category;
   }
 
   // public function getPermissionsCategory(){

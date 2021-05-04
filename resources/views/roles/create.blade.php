@@ -7,7 +7,7 @@
 		  @include('inc.sidebar')
 		</div>
 		<div class="col m11 s12">
-			<div class="row">
+			<div class="row">			
 				<h3 class="flow-text"><i class="material-icons">mode_edit</i> Roles + Permissions</h3>
 				<div class="divider"></div>
 			</div>
@@ -27,12 +27,16 @@
 							<div class="input-field">
 							  	<h6 class="teal-text">Available Permissions</h6>
 							  	<br>	
-							  	@foreach($permissions as $key => $permission)
-									<p>
-									{{ Form::checkbox('permissions[]', $key, '', ['class' => 'filled-in', 'id' => $key]) }}
-									<label for="{{ $key }}">{{ ucfirst($permission) }}</label>
-									</p>
-							  	@endforeach
+								@foreach($permissions->chunk(8) as $chunk)
+							  	<div class="row">
+								  	@foreach($chunk as $permission)
+									<span class="column" style="width:20%;display: inline-block;">
+									{{ Form::checkbox('permissions[]', $permission->id, '', ['class' => 'filled-in', 'id' =>  $permission->id]) }}
+									<label for="{{ $permission->id }}">{{ ucfirst($permission->name) }}</label>
+									</span>
+							  		@endforeach
+								<div>
+								@endforeach
 						  	</div>
 						  	<br>
 							<div class="input-field">

@@ -63,7 +63,7 @@
 	var clickCoordsY;
 
 	var menu = document.querySelector("#context-menu");
-	var menuItems = menu.querySelectorAll(".context-menu_item");
+	// var menuItems = menu.querySelectorAll(".context-menu_item");
 	var menuState = 0;
 	var menuWidth;
 	var menuHeight;

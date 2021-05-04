@@ -9,7 +9,7 @@ class Permission extends Model
 {
     protected $table = 'permissions';
 
-    protected $fillable = ['name','guard_name'];
+    protected $fillable = ['name','guard_name','category_id'];
     
 
     public function roles() {

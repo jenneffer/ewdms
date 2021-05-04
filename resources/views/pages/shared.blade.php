@@ -33,12 +33,12 @@
                   <td>{{ $share->created_at->toDayDateTimeString() }}</td>
                   <td>
                     <p>
-                      <a href="documents/open/{{ $share->document_id }}" class="tooltipped" data-position="left" data-delay="50" data-tooltip="Open"><i class="material-icons">open_with</i></a>
+                      <a href="documents/open/{{ $share->document_id }}" class="tooltipped" data-position="left" data-delay="50" data-tooltip="Open"><i class="material-icons">open_with</i></a>                      
                     </p>
                     <br>
-                    <p>
+                    <!-- <p>
                       <a href="documents/download/{{ $share->document_id }}" class="tooltipped" data-position="left" data-delay="50" data-tooltip="Download"><i class="material-icons">file_download</i></a>
-                    </p>
+                    </p> -->
                   </td>
                 </tr>
                 @endforeach

@@ -97,8 +97,18 @@
         </div>  
         <div class="col s12 input-field">
             <i class="material-icons prefix">class</i>
-            {{ Form::text('guard_name', '', ['class' => 'validate', 'id' => 'guard_name']) }}
-            <label for="guard_name">Guard Name</label>
+            <select name="parent_id" class="form-control">
+                  <option value="" default>Select Category</option>
+                  @foreach ($category as $key => $value)
+                      <option value="{{ $key }}">{{ $value }}</option>
+                  @endforeach
+                  <label for="title">Category</label>
+              </select>
+        </div>
+        <div class="input-field">
+            <i class="material-icons prefix">class</i>
+            <select name="child_id" class="form-control"></select>
+            <label for="title">Sub Category</label>
         </div>            
     </div>
 
@@ -109,3 +119,31 @@
 </div>
 
 @endsection
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('select[name="parent_id"]').on('change', function() {
+            var stateID = $(this).val();
+            if (stateID) {
+                $.ajax({
+                    url: '../getSubCat/' + stateID,
+                    type: "GET",
+                    dataType: "json",
+                    success: function(data) {
+                        $('select[name="child_id"]').empty();
+                        $('select[name="child_id"]').append('<option value="">Select Sub Category</option>');
+                        $.each(data, function(key, value) {
+                            $('select[name="child_id"]').append('<option value="' +
+                                key + '" >' + value + '</option>');
+
+                        });
+                        $('select[name="child_id"]').material_select();
+                    }
+                });
+            } else {
+                $('select[name="child_id"]').empty();
+            }
+        });
+    });
+
+</script>

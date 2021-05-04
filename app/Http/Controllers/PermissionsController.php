@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use App\Category;
 
 class PermissionsController extends Controller
 {
@@ -41,7 +42,14 @@ class PermissionsController extends Controller
      */
     public function store(Request $request)
     {
-        $permission = Permission::create($request->all());
+        // $permission = Permission::create($request->all());
+        $permission = new Permission;
+        $permission->name = $request->input('name');
+
+        $category_id = (!empty($request->input('child_id'))) ? $request->input('child_id') : $request->input('parent_id');
+        $permission->category_id = $category_id;
+        // save to db
+        $permission->save();
 
         \Log::addToLog('New permission ' . $request->input('name') . ' was added');
 
@@ -69,8 +77,17 @@ class PermissionsController extends Controller
     {
         // $role = Role::findOrFail($id);
         $permissions = Permission::findOrFail($id);
+        
+        $category_id = $permissions->category_id;
+        $cat = Category::findorFail($category_id);
+        
+        $parent_id = $cat->parent_id;
+        $p_cat_name = Category::where("parent_id", 0)->pluck('name', 'id');
 
-        return view('permissions.edit',compact('permissions'));
+        $sub_cat_name=Category::where("parent_id", $parent_id)->where("child_id",0)->pluck('name', 'id');
+        $child_list=Category::where("child_id",$cat->child_id)->pluck('name', 'id');
+
+        return view('permissions.edit',compact('permissions','sub_cat_name','parent_id','category_id','p_cat_name','cat','child_list'));
     }
 
     /**
@@ -84,13 +101,15 @@ class PermissionsController extends Controller
     {
 
         $this->validate($request, [
-            'name' => 'string|required',
-            'guard_name' => 'string|required'
+            'name' => 'string|required',            
         ]);
-
+        
         $permission = Permission::findOrFail($id);
         $permission->name = $request->input('name');
-        $permission->guard_name = $request->input('guard_name');
+
+        $category_id = (!empty($request->input('subcat_id'))) ? $request->input('subcat_id') : $request->input('parent_id');
+        $permission->category_id = $category_id;
+        // save to db
         $permission->save();
 
         \Log::addToLog('Permission ID ' . $id . ' was edited');
@@ -113,4 +132,8 @@ class PermissionsController extends Controller
 
         return redirect('/roles')->with('success', 'Permission Deleted');
     }
+
+    public function getRolePermissionsID($role_id){
+        
+    } 
 }

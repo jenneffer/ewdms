@@ -9,7 +9,8 @@ use App\Document;
 class ShareController extends Controller
 {
     public function __construct() {
-        return $this->middleware(['auth','permission:shared']);
+        // return $this->middleware(['auth','permission:shared']);
+        return $this->middleware(['auth']);
     }
 
     /**

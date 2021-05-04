@@ -65,14 +65,14 @@
                                     <label for="expirePicker">Expires At</label>
                                 </div>
                                 <br>
-                                {{-- <div class="input-field">
+                                <!-- {{-- <div class="input-field">
                 <i class="material-icons prefix">class</i>
                 {{ Form::select('parent_id',$parent_name,$categories_name,['id' => 'parent_id']) }}
                 <label for="parent_id">Category (Optional)</label>
                 @if ($errors->has('parent_id'))
                   <span class="red-text"><strong>{{ $errors->first('parent_id') }}</strong></span>
                 @endif
-              </div> --}}
+              </div> --}} -->
                                 <div class="input-field">
                                     <i class="material-icons prefix">class</i>
                                     <select name="parent_id" class="form-control">

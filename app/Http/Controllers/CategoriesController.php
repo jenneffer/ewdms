@@ -159,4 +159,11 @@ class CategoriesController extends Controller
             ->pluck('name', 'id');
         return json_encode($cities);
     }
+
+    public function getParentCat($id){
+        $result = Category::where("id", $id)->pluck('name', 'parent_id','child_id');
+        
+        return $result;
+
+    }
 }

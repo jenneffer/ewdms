@@ -1,6 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+.hoverable:hover{
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+}
+</style>
   <!-- Admin Dashboard -->
   <div class="container">
     <div class="row">
@@ -8,7 +14,7 @@
         <h3 class="flow-text"><i class="material-icons">settings</i> Dashboard</h3>
         <div class="divider"></div>
       </div>
-      <div class="section">
+      <div class="section">        
         <a href="/documents">
           <div class="col m4 s6">
             <div class="card hoverable indigo lighten-1 white-text">
@@ -19,6 +25,7 @@
             </div>
           </div>
         </a>
+        @hasrole('Root|Admin')
         <a href="/users">
           <div class="col m4 s6">
             <div class="card hoverable indigo lighten-1 white-text">
@@ -58,7 +65,7 @@
               </div>
             </div>
           </div>
-        </a>
+        </a>        
         <a href="/categories">
           <div class="col m4 s6">
             <div class="card hoverable indigo lighten-1 white-text">
@@ -69,6 +76,7 @@
             </div>
           </div>
         </a>
+        @endhasrole
       </div>
     </div>
   </div>

@@ -12,7 +12,7 @@
 				<div class="divider"></div>
 			</div>
 			<div class="row">
-				<div class="col m11">
+				<div class="col m12">
 					{!! Form::open(['action' => ['RolesController@update', $role->id], 'method' => 'PUT']) !!}
 					<div class="card z-depth-2 hoverable">
 						<div class="card-content">
@@ -27,10 +27,10 @@
 							<div class="input-field">
 							  	<h6 class="teal-text">Available Permissions</h6>
 							  	<br>
-								@foreach ($permissions->chunk(12) as $chunk)	
+								@foreach ($permissions->chunk(8) as $chunk)	
 								<div class="row">
 							  	@foreach($chunk as $permission)
-									<span class="column" style="width:200px;display: inline-block;">
+									<span class="column" style="width:20%;display: inline-block;">
 									{{ Form::checkbox('permissions[]', $permission->id, (count($role->permissions->where('id', $permission->id)) ? true:null), ['class' => 'filled-in', 'id' => $permission->id]) }}
 									
 									<label for="{{ $permission->id }}">{{ ucfirst($permission->name) }}</label>

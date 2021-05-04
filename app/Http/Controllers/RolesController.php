@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use App\Category;
 
 class RolesController extends Controller
 {
@@ -23,10 +24,11 @@ class RolesController extends Controller
         // $roles = Role::pluck('name','id')->all();
         $roles = Role::all();
         $permissions = Permission::pluck('name','id')->all();
+        $category = Category::where('parent_id', 0)->pluck('name', 'id');
         // for table
         // $rs = Role::all();
 
-        return view('roles.index',compact('roles','permissions'));
+        return view('roles.index',compact('roles','permissions','category'));
     }
 
     /**
@@ -37,7 +39,8 @@ class RolesController extends Controller
     public function create()
     {
         // abort_if(Gate::denies('agent_create'), Response::HTTP_FORBIDDEN, '403 Forbidden'); - check permissions
-        $permissions = Permission::pluck('name','id')->all();        
+        $permissions = Permission::all();  
+              
         return view('roles.create', compact('permissions'));
     }
 
@@ -101,7 +104,7 @@ class RolesController extends Controller
         $permissions = Permission::all();
         //get the permissions of this particular role
         $role->load('permissions');
-// var_dump($role->permissions);
+
         return view('roles.edit',compact('role','permissions'));
     }
 
