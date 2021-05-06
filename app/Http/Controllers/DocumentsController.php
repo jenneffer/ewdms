@@ -24,8 +24,7 @@ class DocumentsController extends Controller
    * @return \Illuminate\Http\Response
    */
   public function index()
-  {
-    
+  {  
       if (auth()->user()->hasRole('Root')) {
         // get all category
         $category = DB::table('category')->where('parent_id',0)->get();
@@ -149,9 +148,15 @@ class DocumentsController extends Controller
    */
   public function show($id)
   {
+    //get the category_id    
     $doc = Document::findOrFail($id);
+    $category_id=$doc->category_id;
+    $cat= Category::findorFail($category_id);
+    $parent_id = $cat->parent_id;
+    $child_id = $cat->child_id;
 
-    return view('documents.show', compact('doc'));
+    return view('documents.show', compact('doc','parent_id','child_id','category_id'));
+
   }
 
   /**
@@ -378,18 +383,22 @@ class DocumentsController extends Controller
         $docs = DB::table('document')->where('user_id', '!=', auth()->user()->id)->whereIn('category_id',$arr_category)->whereIn('category_id', $arr_cat_same_parent)->get();
         
       }
+      //find parent_id for breadcrumb purpose
+      $parent_id = Category::findParentId($id);
+      //find subcatid
+      $child_id = Category::findSubCatId($id);
       $filetype = null;
-      return view('documents.index', compact('docs', 'filetype','id'));
+      return view('documents.index', compact('docs', 'filetype','id','parent_id','child_id'));
   }
 
   public function showSubCategoryItem($id){
     $subcategory = DB::table('category')->where('parent_id',$id)->where('child_id',0)->get();
-    return view('documents.subcategory', compact('subcategory'));
+    return view('documents.subcategory', compact('subcategory','id'));
   }
 
   public function showSubCategoryChildItem($parent_id,$id){    
     $subcategoryItem = DB::table('category')->where('parent_id',$parent_id)->where('child_id',$id)->get();    
-    return view('documents.subcategory-item', compact('subcategoryItem'));
+    return view('documents.subcategory-item', compact('subcategoryItem','parent_id','id'));
   }
   public function getCategoryPermissions($user_role_id){
     //get role's permissions      

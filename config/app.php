@@ -241,6 +241,7 @@ return [
         'MaterializeCSS' => Skydiver\LaravelMaterializeCSS\MaterializeCSS::class,
         // for user log activities
         'Log' => App\Helpers\Log::class,
+        
 
     ],
 

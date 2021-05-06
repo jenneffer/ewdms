@@ -1,5 +1,7 @@
 <!-- JQuery -->
 <script src="{{ asset('js/jquery-3.5.1.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
 <!-- Materialize css -->
 <script src="{{ asset('materialize-css/js/materialize.min.js') }}" charset="utf-8"></script>
 
@@ -10,9 +12,9 @@
   // select
   $('select').material_select();
   // modal
-  $('#modal1').modal();
-  // modal for help
-  $('#modal2').modal();
+  // $('#modal1').modal();
+  // // modal for help
+  // $('#modal2').modal();
   // DELETE using link
   $(function () {
       $('.data-delete').on('click', function (e) {
@@ -198,7 +200,7 @@ $(document).ready(function(){
 </script>
 <!-- switch -->
 <script type="text/javascript">
-$(".switch").find("input[type=checkbox]").on("change", function() {
+$(".switch").find("input[type=checkbox]").on("change", function() { 
   if($(this).prop('checked')) {
     $("#folderView").toggleClass('unshow');
     $("#tableView").toggleClass('unshow');

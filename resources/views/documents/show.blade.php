@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+<link href="{{ asset('css/custom.css') }}" rel="stylesheet" />
 <style media="screen">
   .btn-icons {
     display: flex;
@@ -21,36 +22,39 @@
   }
 </style>
 <div class="row">
-  <div class="section">
-    <div class="col m1 hide-on-med-and-down">
+    <div class="col-sm-1">
       @include('inc.sidebar')
     </div>
-    <div class="col m11 s12">
-      <div class="row">
-        <h3 class="flow-text"><i class="material-icons">info</i> Document Information</h3>
-        <div class="btn-icons">
-          {!! Form::open() !!}
-          @can('edit')
-          <a href="/documents/{{ $doc->id }}/edit" class="btn-circle teal waves-effect waves-light tooltipped" data-position="left" data-delay="50" data-tooltip="Edit this"><i class="material-icons">mode_edit</i></a>
-          @endcan
-          <a href="/documents/open/{{ $doc->id }}" class="btn-circle blue darken-3 waves-effect waves-light tooltipped" data-position="top" data-delay="50" data-tooltip="Open this"><i class="material-icons">open_with</i></a>
-          {!! Form::close() !!}
-          <!-- SHARE using link -->
-          {!! Form::open(['action' => ['ShareController@update', $doc->id], 'method' => 'PATCH', 'id' => 'form-share-documents-' . $doc->id]) !!}
-          @can('shared')
-          <a href="#" class="btn-circle purple waves-effect waves-light data-share tooltipped" data-position="top" data-delay="50" data-tooltip="Share this" data-form="documents-{{ $doc->id }}"><i class="material-icons">share</i></a>
-          @endcan
-          {!! Form::close() !!}
-          <!-- DELETE using link -->
-          {!! Form::open(['action' => ['DocumentsController@destroy', $doc->id],
-          'method' => 'DELETE', 'id' => 'form-delete-documents-' . $doc->id]) !!}
-          @can('delete')
-          <a href="#" class="btn-circle red waves-effect waves-light data-delete tooltipped" data-position="right" data-delay="50" data-tooltip="Delete this" data-form="documents-{{ $doc->id }}"><i class="material-icons">delete</i></a>
-          @endcan
-          {!! Form::close() !!}
+    <div class="col-sm-11">
+      <main>
+        <div class="container-fluid">
+          <br>
+        {{Breadcrumbs::render('subcategoryitemdetails', $parent_id, $child_id, $category_id, $doc)}}  
+        <div class="col-sm-12">
+          <h3 class="flow-text"><i class="material-icons">info</i> Document Information</h3>
+          <div class="btn-icons">
+            {!! Form::open() !!}
+            @can('edit')
+            <a href="/documents/{{ $doc->id }}/edit" class="btn-circle teal waves-effect waves-light tooltipped" data-position="left" data-delay="50" data-tooltip="Edit this"><i class="material-icons">mode_edit</i></a>
+            @endcan
+            <a href="/documents/open/{{ $doc->id }}" target="_blank" class="btn-circle blue darken-3 waves-effect waves-light tooltipped" data-position="top" data-delay="50" data-tooltip="Open this"><i class="material-icons">open_with</i></a>
+            {!! Form::close() !!}
+            <!-- SHARE using link -->
+            <!-- {!! Form::open(['action' => ['ShareController@update', $doc->id], 'method' => 'PATCH', 'id' => 'form-share-documents-' . $doc->id]) !!}
+            @can('shared')
+            <a href="#" class="btn-circle purple waves-effect waves-light data-share tooltipped" data-position="top" data-delay="50" data-tooltip="Share this" data-form="documents-{{ $doc->id }}"><i class="material-icons">share</i></a>
+            @endcan
+            {!! Form::close() !!} -->
+            <!-- DELETE using link -->
+            {!! Form::open(['action' => ['DocumentsController@destroy', $doc->id],
+            'method' => 'DELETE', 'id' => 'form-delete-documents-' . $doc->id]) !!}
+            @can('delete')
+            <a href="#" class="btn-circle red waves-effect waves-light data-delete tooltipped" data-position="right" data-delay="50" data-tooltip="Delete this" data-form="documents-{{ $doc->id }}"><i class="material-icons">delete</i></a>
+            @endcan
+            {!! Form::close() !!}
+          </div>
         </div>
-      </div>
-      <div class="col s12 m11">
+      <div class="col-sm-12">
         <div class="card horizontal hoverable">
           {{--<div class="card-image hide-on-med-and-down">
             <img src="/storage/images/sideytu1.jpg" height="650px">
@@ -149,7 +153,8 @@
           </div>
         </div>
       </div>
+        <div>
+      </main>
     </div>
-  </div>
 </div>
 @endsection

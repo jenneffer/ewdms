@@ -9,7 +9,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'EDMS') }}</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="{{ asset('iconfont/material-icons.css') }}">
     <!-- Materialize css -->
     <link rel="stylesheet" href="{{ asset('materialize-css/css/materialize.min.css') }}">
@@ -17,16 +17,16 @@
     <link rel="stylesheet" href="{{ asset('DataTables/datatables.min.css') }}">
     <!-- favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="/storage/images/favicon.ico">
-    
+    <link href="{{ asset('css/custom.css') }}" rel="stylesheet" />
     <style>
-      body {
+      /* body {
         display: flex;
         min-height: 100vh;
         flex-direction: column;
       }
       main {
         flex: 1 0 auto;
-      }
+      } */
       .preloader-background {
       	display: flex;
       	align-items: center;
@@ -43,7 +43,7 @@
     </style>
 </head>
 <body>
-  <!-- @include('inc.spinner') -->
+  @include('inc.spinner')
   <main>
     <div id="app">
       @include('inc.navbar')

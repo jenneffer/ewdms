@@ -42,6 +42,9 @@ class PermissionsController extends Controller
      */
     public function store(Request $request)
     {
+        $this->validate($request, [
+            'name' => 'string|required',            
+        ]);
         // $permission = Permission::create($request->all());
         $permission = new Permission;
         $permission->name = $request->input('name');
@@ -74,19 +77,27 @@ class PermissionsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
-    {
+    {       
         // $role = Role::findOrFail($id);
         $permissions = Permission::findOrFail($id);
-        
         $category_id = $permissions->category_id;
-        $cat = Category::findorFail($category_id);
+
+        if(!empty($category_id)){
+            $cat = Category::findorFail($category_id);
+            $parent_id = $cat->parent_id;
+            $p_cat_name = Category::where("parent_id", 0)->pluck('name', 'id');
+
+            $sub_cat_name=Category::where("parent_id", $parent_id)->where("child_id",0)->pluck('name', 'id');
+            $child_list=Category::where("child_id",$cat->child_id)->pluck('name', 'id');
+
+        }else{
+            $cat = "";
+            $parent_id = "";
+            $p_cat_name = "";
+            $sub_cat_name = "";
+            $child_list = "";
+        }
         
-        $parent_id = $cat->parent_id;
-        $p_cat_name = Category::where("parent_id", 0)->pluck('name', 'id');
-
-        $sub_cat_name=Category::where("parent_id", $parent_id)->where("child_id",0)->pluck('name', 'id');
-        $child_list=Category::where("child_id",$cat->child_id)->pluck('name', 'id');
-
         return view('permissions.edit',compact('permissions','sub_cat_name','parent_id','category_id','p_cat_name','cat','child_list'));
     }
 
