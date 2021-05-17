@@ -43,4 +43,12 @@ class User extends Authenticatable
     public function documents() {
         return $this->hasMany('App\Document');
     }
+
+    public static function findName($id)
+    {
+        $name = User::where('id', '=', $id)->pluck('name');
+
+        return $name[0]?? '--';
+    }
+
 }

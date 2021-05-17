@@ -28,10 +28,10 @@ class LoginController extends Controller
     // protected $redirectTo = '/home';
     protected function redirectTo()
     {
-        if(auth()->user()->hasRole('Root')) {
+        if(auth()->user()->hasRole('Admin')) {
             return '/dashboard';
         }
-        elseif (auth()->user()->hasRole('Admin')) {
+        elseif (auth()->user()->hasRole('Moderator')) {
             return '/users';
         }
         else {

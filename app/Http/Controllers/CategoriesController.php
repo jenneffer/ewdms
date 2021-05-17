@@ -52,7 +52,10 @@ class CategoriesController extends Controller
         $cate = new Category;
         $cate->name = $request->input('name');
         $cate->parent_id = empty($request->input('parent_id')) ? 0 : $request->input('parent_id');
-        $cate->child_id = empty($request->input('child_id')) ? 0 : $request->input('child_id');
+        if(!empty($request->input('sub_child_id'))) $child_id = $request->input('sub_child_id');
+        elseif(!empty($request->input('child_id'))) $child_id = $request->input('child_id');
+        else $child_id = 0;
+        $cate->child_id = $child_id;
         $cate->created_by = auth()->user()->id;
         $cate->save();
         //$cate = Category::create($request->only('name'));
@@ -83,7 +86,6 @@ class CategoriesController extends Controller
     public function edit($id)
     {
         $category = Category::findOrFail($id);
-
         return view('categories.edit', compact('category'));
     }
 
@@ -97,11 +99,11 @@ class CategoriesController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'name' => 'string|required'
+            'categoryName' => 'string|required'
         ]);
 
         $category = Category::findOrFail($id);
-        $category->name = $request->input('name');
+        $category->name = $request->input('categoryName');
         $category->save();
 
         \Log::addToLog('Category ID ' . $id . ' was edited');

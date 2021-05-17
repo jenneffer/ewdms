@@ -25,7 +25,7 @@ class DocumentsController extends Controller
    */
   public function index()
   {
-    if (auth()->user()->hasRole('Root')) {
+    if (auth()->user()->hasRole('Admin')) {
       // get all
       $docs = Document::where('isExpire', '!=', 2)->get();
       
@@ -349,9 +349,9 @@ class DocumentsController extends Controller
     // find out auth user role
     $user = auth()->user();
     // find trashed documents
-    if ($user->hasRole('Root')) {
+    if ($user->hasRole('Admin')) {
       $trash = Document::where('isExpire', 2)->get();
-    } elseif ($user->hasRole('Admin')) {
+    } elseif ($user->hasRole('Moderator')) {
       $trash = Document::where('isExpire', 2)->where('department_id', $user->department_id)->get();
     } else {
       $trash = Document::where('isExpire', 2)->where('user_id', $user->id)->get();

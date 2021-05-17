@@ -2,7 +2,7 @@
 
 // Documents
 Breadcrumbs::register('documents', function ($breadcrumbs) {
-    $breadcrumbs->push('Documents', route('category'));
+    $breadcrumbs->push('All Documents', route('category'));
 });
 
 // Documents > Create
@@ -22,7 +22,7 @@ Breadcrumbs::register('category', function ($breadcrumbs, $id) {
 Breadcrumbs::register('subcategory', function ($breadcrumbs, $parent_id, $id) {
     $breadcrumbs->parent('category', $parent_id);
     $subcat = App\Category::findName($id);
-    $breadcrumbs->push($subcat, route('documents.subcategory.child', ['id'=>$id, 'parent_id'=>$parent_id]));
+    $breadcrumbs->push($subcat, route('documents.subcategory.item', ['id'=>$id, 'parent_id'=>$parent_id]));
 });
 
 // Documents > Category > Sub Category > Item
@@ -32,10 +32,17 @@ Breadcrumbs::register('subcategoryitem', function ($breadcrumbs, $parent_id, $ch
     $breadcrumbs->push($subcatitem, route('documents.category', $id));
 });
 
+// Documents > Category > Sub Category > Edit Item
+Breadcrumbs::register('documentEditSubItem', function ($breadcrumbs, $parent_id,$child_no,$doc) {   
+    $breadcrumbs->parent('subcategory',$parent_id,$child_no);    
+    $subcatitem = App\Category::findName($doc->id);
+    $breadcrumbs->push($subcatitem, route('documents.category', $doc->id));
+});
+
 // Documents > Category > Sub Category > Item > item1
 Breadcrumbs::register('subcategoryitemlist', function ($breadcrumbs, $parent_id, $child_id, $id) {   
     $breadcrumbs->parent('subcategoryitem',$parent_id,$child_id, $id);        
-    $breadcrumbs->push('All', route('documents.category', $id));
+    // $breadcrumbs->push('All', route('documents.category', $id));
 });
 
 // Documents > Category > Sub Category > Item > item1-details
@@ -43,6 +50,35 @@ Breadcrumbs::register('subcategoryitemdetails', function ($breadcrumbs, $parent_
     $breadcrumbs->parent('subcategoryitemlist',$parent_id,$child_id,$category_id);        
     $breadcrumbs->push($doc->name, route('documents.show', $doc->id));
 });
+
+//Documents > Category >View item-details
+Breadcrumbs::register('documentItem', function ($breadcrumbs, $doc) {   
+    $breadcrumbs->parent('category',$doc->category_id);        
+    $breadcrumbs->push($doc->name, route('documents.show', $doc->id));
+});
+
+//Documents > Category > Sub category >View item-details
+Breadcrumbs::register('documentSubItem', function ($breadcrumbs, $parent_id, $category_id, $doc) {   
+    $breadcrumbs->parent('subcategory',$parent_id, $category_id);        
+    $breadcrumbs->push($doc->name, route('documents.show', $doc->id));
+});
+
+//Documents > Category >Edit item-details
+Breadcrumbs::register('documentEdit', function ($breadcrumbs, $doc) {   
+    $breadcrumbs->parent('category',$doc->category_id);        
+    $breadcrumbs->push($doc->name, route('documents.edit', $doc->id));
+});
+Breadcrumbs::register('documentEditSub', function ($breadcrumbs, $parent_id, $doc) {   
+    $breadcrumbs->parent('subcategory', $parent_id, $doc->category_id);        
+    $breadcrumbs->push($doc->name, route('documents.edit', $doc->id));
+});
+
+//Documents > Category > Sub Category > Sub Category Item > Item details > View (Embed)
+Breadcrumbs::register('documentViewEmbed', function ($breadcrumbs, $parent_id, $child_id, $doc) {   
+    $breadcrumbs->parent('subcategoryitemlist',$parent_id, $child_id, $doc->id);        
+    $breadcrumbs->push('View', route('view.embed', $doc->id));
+});
+
 
 // Role
 Breadcrumbs::register('roles', function ($breadcrumbs) {
@@ -90,3 +126,11 @@ Breadcrumbs::register('editcategories', function ($breadcrumbs, $cat) {
     $breadcrumbs->parent('categories');   
     $breadcrumbs->push('Edit Categories', route('categories.edit', $cat->id));
 });
+
+// Category > Sub Category
+Breadcrumbs::register('subcategories', function ($breadcrumbs, $id) {
+    $breadcrumbs->parent('categories'); 
+    $subcat = App\Category::findName($id);
+    $breadcrumbs->push($subcat, route('subcat.index', $id));
+});
+

@@ -3,20 +3,19 @@
 @section('content')
 <link href="{{ asset('css/custom.css') }}" rel="stylesheet" />
 <div class="row">
-  <div class="col-sm-1">
+  <div class="section">
+  <div class="col m1 hide-on-med-and-down">
     @include('inc.sidebar')
   </div>
-  <div class="col-sm-11">
-      <main>
-      <div class="container-fluid">    
-      <br>  
-      {{Breadcrumbs::render('users')}}     
-      <div class="col-lg-12">
-        <h3 class="flow-text"><i class="material-icons">person</i> Users
-          <button data-target="#modal1" data-toggle="modal" data class="btn btn-info right">Add New</button>
-        </h3>        
+  <div class="col m11 s12">
+  {{Breadcrumbs::render('users')}}     
+      <div class="row">
+        <h5 class="flow-text"><i class="material-icons">person</i> Users
+          <button data-target="modal1" class="btn waves-effect waves-light modal-trigger right">Add New</button>
+        </h5>  
+        <div class="divider"></div>      
       </div>
-      <div class="divider"></div>
+     
       <div class="card z-depth-2">
         <div class="card-content">
           <table class="bordered centered highlight" id="myDataTable">
@@ -24,25 +23,23 @@
               <tr>
                   <th>Name</th>
                   <th>Role</th>
-                  <th>Department</th>
+                  <!-- <th>Department</th> -->
                   <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               @if(count($users) > 0)
                 @foreach($users as $user)
-                  @if(!$user->hasRole('Root'))
+                  @if(!$user->hasRole('Admin'))
                   <tr>
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->roles()->pluck('name')->implode(' ') }}</td>
-                    <td>{{ $user->department['dptName'] }}</td>
+                    <!-- <td>{{ $user->department['dptName'] }}</td> -->
                     <td>
                       <!-- DELETE using link -->
-                      {!! Form::open(['action' => ['UsersController@destroy', $user->id],
-                      'method' => 'DELETE',
-                      'id' => 'form-delete-users-' . $user->id]) !!}
-                      <a href="#" class="left"><i class="material-icons">visibility</i></a>
-                      <a href="/users/{{ $user->id }}/edit" class="center"><i class="material-icons">mode_edit</i></a>
+                      {!! Form::open(['action' => ['UsersController@destroy', $user->id],'method' => 'DELETE','id' => 'form-delete-users-' . $user->id]) !!}
+                      <a href="" data-id="{{ $user->id }}" class="left data-inactive"><i class="material-icons">visibility</i></a><!-- deactivate user-->
+                      <a href="/users/{{ $user->id }}/edit" class="center"><i class="material-icons">mode_edit</i></a>                                            
                       <a href="" class="right data-delete" data-form="users-{{ $user->id }}"><i class="material-icons">delete</i></a>
                       {!! Form::close() !!}
                     </td>
@@ -58,81 +55,74 @@
           </table>
         </div>
       </div>
-      </div>
-      </main>
   </div>
+
+  </div>  
 </div>
 <!-- Modal -->
 <!-- Modal Structure -->
 <div id="modal1" class="modal">
 {!! Form::open(['action' => 'UsersController@store', 'method' => 'POST', 'class' => 'col s12']) !!}
-    <div class="modal-dialog modal-xl">    
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">Add User</h4>
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>      
-      <div class="modal-body">
-        <div class="row">
-          <div class="col m6 s12 input-field">
-            <i class="material-icons prefix">account_circle</i>
-            {{ Form::text('name','',['class' => 'validate', 'id' => 'name']) }}
-            <label for="name">Name</label>
-          </div>
-          <div class="col m6 s12 input-field">
-            <i class="material-icons prefix">email</i>
-            {{ Form::email('email','',['class' => 'validate', 'id' => 'email']) }}
-            <label for="email">Email Address</label>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col m6 s12 input-field">
-            <i class="material-icons prefix">group</i>
-            <select name="department_id" id="department_id">
-              <option value="" disabled selected>Choose Department</option>
-              @if(count($depts) > 0)
-                @if(Auth::user()->hasRole('Root'))
-                  @foreach($depts as $dept)
-                  <option value="{{ $dept->id }}">{{ $dept->dptName }}</option>
-                  @endforeach
-                @elseif(Auth::user()->hasRole('Admin'))
-                  <option value="{{ Auth::user()->department_id }}">{{ Auth::user()->department['dptName'] }}</option>
-                @endif
-              @endif
-            </select>
-            <label for="department_id">Department</label>
-          </div>
-          <div class="col m6 s12 input-field">
-            <i class="material-icons prefix">assignment_ind</i>
-            <select name="role" id="role">
-              <option value="" disabled selected>Assign Role</option>
-              @if(count($roles) > 0)
-                @foreach($roles as $role)
-                <option value="{{ $role->id }}">{{ $role->name }}</option>
-                @endforeach
-              @endif
-            </select>
-            <label for="role">Role</label>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col m6 s12 input-field">
-            <i class="material-icons prefix">vpn_key</i>
-            {{ Form::password('password',['class' => 'validate', 'id' => 'password']) }}
-            <label for="password">Password</label>
-          </div>
-          <div class="col m6 s12 input-field">
-            <i class="material-icons prefix">vpn_key</i>
-            {{ Form::password('password_confirmation',['class' => 'validate', 'id' => 'password-confirm']) }}
-            <label for="password-confirm">Confirm Password</label>
-          </div>
-        </div>
+  <div class="modal-content">
+    <h5>Add User</h5>      
+    <div class="row">
+      <div class="col m6 s12 input-field">
+        <i class="material-icons prefix">account_circle</i>
+        {{ Form::text('name','',['class' => 'validate', 'id' => 'name']) }}
+        <label for="name">Name</label>
       </div>
-      
-      <div class="modal-footer">
-        {{ Form::submit('submit',['class' => 'btn']) }}
+      <div class="col m6 s12 input-field">
+        <i class="material-icons prefix">email</i>
+        {{ Form::email('email','',['class' => 'validate', 'id' => 'email']) }}
+        <label for="email">Email Address</label>
       </div>
-      {!! Form::close() !!}
+    </div>
+    <div class="row">
+      <!-- <div class="col m6 s12 input-field">
+        <i class="material-icons prefix">group</i>
+        <select name="department_id" id="department_id">
+          <option value="" disabled selected>Choose Department</option>
+          @if(count($depts) > 0)
+            @if(Auth::user()->hasRole('Admin'))
+              @foreach($depts as $dept)
+              <option value="{{ $dept->id }}">{{ $dept->dptName }}</option>
+              @endforeach
+            @elseif(Auth::user()->hasRole('Moderator'))
+              <option value="{{ Auth::user()->department_id }}">{{ Auth::user()->department['dptName'] }}</option>
+            @endif
+          @endif
+        </select>
+        <label for="department_id">Department</label>
+      </div> -->
+      <div class="col m6 s12 input-field">
+        <i class="material-icons prefix">assignment_ind</i>
+        <select name="role" id="role">
+          <option value="" disabled selected>Assign Role</option>
+          @if(count($roles) > 0)
+            @foreach($roles as $role)
+            <option value="{{ $role->id }}">{{ $role->name }}</option>
+            @endforeach
+          @endif
+        </select>
+        <label for="role">Role</label>
       </div>
+    </div>
+    <div class="row">
+      <div class="col m6 s12 input-field">
+        <i class="material-icons prefix">vpn_key</i>
+        {{ Form::password('password',['class' => 'validate', 'id' => 'password']) }}
+        <label for="password">Password</label>
+      </div>
+      <div class="col m6 s12 input-field">
+        <i class="material-icons prefix">vpn_key</i>
+        {{ Form::password('password_confirmation',['class' => 'validate', 'id' => 'password-confirm']) }}
+        <label for="password-confirm">Confirm Password</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      {{ Form::submit('submit',['class' => 'btn']) }}
+    </div> 
+  </div> 
+{!! Form::close() !!}
 </div>
 @endsection

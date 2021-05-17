@@ -10,7 +10,7 @@ use App\Category;
 class RolesController extends Controller
 {
     public function __construct() {
-        return $this->middleware(['auth','role:Root']);
+        return $this->middleware(['auth','role:Admin|Moderator']);
     }
 
     /**
@@ -76,6 +76,8 @@ class RolesController extends Controller
             $role->givePermissionTo($p);
         }
 
+        \Log::addToLog('New role ' . $request->input('name') . ' was added');
+
         return redirect('/roles')->with('success','Role and Permissions Added');
     }
 
@@ -127,6 +129,7 @@ class RolesController extends Controller
 
         $input = $request->except(['permissions']);
         $permissions = $request['permissions'];
+        
         // save role name
         $role->fill($input)->save();
 
@@ -140,6 +143,8 @@ class RolesController extends Controller
             $p = Permission::where('id',$permission)->firstOrFail();
             $role->givePermissionTo($p);
         }
+
+        \Log::addToLog('Role ID ' . $id . ' was edited');
 
         return redirect('/roles')->with('success','Role Updated');
 

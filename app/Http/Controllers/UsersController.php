@@ -25,14 +25,15 @@ class UsersController extends Controller
     public function index()
     {
         // $users = User::where('status',true)->get();
-        if (auth()->user()->hasRole('Root'))
+        if (auth()->user()->hasRole('Admin'))
         {
           $users = User::where('status',true)->get();
         }
-        elseif (auth()->user()->hasRole('Admin'))
+        elseif (auth()->user()->hasRole('Moderator'))
         {
-          $d = auth()->user()->department_id;
-          $users = User::where('status',true)->where('department_id',$d)->where('id','!=',auth()->user()->id)->get();
+          // $d = auth()->user()->department_id;
+          // $users = User::where('status',true)->where('department_id',$d)->where('id','!=',auth()->user()->id)->get();
+          $users = User::where('status',true)->where('id','!=',auth()->user()->id)->get();
         }
         else
         {
@@ -41,13 +42,13 @@ class UsersController extends Controller
         // get all dept
         $depts = Department::all();
         // get roles
-        if (auth()->user()->hasRole('Root'))
+        if (auth()->user()->hasRole('Admin'))
         {
-          $roles = Role::where('name','!=','Root')->get();
+          $roles = Role::where('name','!=','Admin')->get();
         }
         else
         {
-          $roles = Role::where('name','!=','Root')->where('name','!=','Admin')->get();
+          $roles = Role::where('name','!=','Admin')->where('name','!=','Moderator')->get();
         }
 
         return view('users.index',compact('users','depts','roles'));
@@ -84,7 +85,8 @@ class UsersController extends Controller
         $user->name = $request->input('name');
         $user->email = $request->input('email');
         $user->password = $request->input('password');
-        $user->department_id = $request->input('department_id');
+        // $user->department_id = $request->input('department_id');
+        $user->role = $request->input('role');
         $user->status = true;
         $user->save();
 
@@ -120,15 +122,14 @@ class UsersController extends Controller
         $user = User::findOrFail($id);
         $depts = Department::all();
         // get roles
-        if (auth()->user()->hasRole('Root'))
+        if (auth()->user()->hasRole('Admin'))
         {
-          $roles = Role::where('name','!=','Root')->get();
+          $roles = Role::where('name','!=','Admin')->get();
         }
         else
         {
-          $roles = Role::where('name','!=','Root')->where('name','!=','Admin')->get();
+          $roles = Role::where('name','!=','Admin')->where('name','!=','Moderator')->get();
         }
-
         return view('users.edit',compact('user','depts','roles'));
     }
 
@@ -144,14 +145,14 @@ class UsersController extends Controller
         $this->validate($request, [
           'name' => 'required|string|max:255',
           'email' => 'required|string|email|max:255',
-          'department_id' => 'required',
+          // 'department_id' => 'required',
           'role' => 'required',
         ]);
 
         $user = User::findOrFail($id);
         $user->name = $request->input('name');
         $user->email = $request->input('email');
-        $user->department_id = $request->input('department_id');
+        // $user->department_id = $request->input('department_id');
         // if ($request->input('status')) {
         //     $user->status = true;
         // }
@@ -196,6 +197,16 @@ class UsersController extends Controller
         \Log::addToLog('User ID : '.$id.' was deleted');
 
         return redirect('/users')->with('success', 'User deleted');
+    }
+
+    public function deactivate(Request $request){
+      $user_id = $request->user_id;
+      $user = User::findOrFail($user_id);
+      $user->status = 0;
+      $user->save();
+      \Log::addToLog('User ID : '.$user_id.' was deactivated');
+
+      return response()->json(['success' => true, 'msg'=>'User ".$user_id." was deactivated', 'url'=> '/users']);
     }
 
 }

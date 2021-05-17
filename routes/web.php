@@ -30,6 +30,7 @@ Route::get('dashboard', function() {
 
 // users
 Route::resource('users','UsersController');
+Route::post('users/deactivate','UsersController@deactivate')->name('user.deactivate');
 // departments
 Route::resource('departments','DepartmentsController');
 
@@ -45,8 +46,11 @@ Route::get('getChildCat/{id}','CategoriesController@getChildCat')->name('getChil
 
 
 //sub categories
-Route::resource('categories/{id}/addSub','SubCategoryController');
+// Route::resource('categories/{id}/addSub','SubCategoryController');
+Route::resource('categories/{id}/showSub','SubCategoryController');
+Route::get('categories/{id}/showSub','SubCategoryController@index')->name('subcat.index');
 Route::delete('subcategoriesDeleteMulti', 'SubCategoryController@deleteMulti');
+Route::post('categories/addSub','SubCategoryController@storeSubCategoryItem')->name('subcat.store.item');
 
 
 
@@ -54,16 +58,19 @@ Route::delete('subcategoriesDeleteMulti', 'SubCategoryController@deleteMulti');
 Route::resource('documents','DocumentsController');
 Route::get('documents', 'DocumentsController@index')->name('category');
 Route::get('documents/download/{id}','DocumentsController@download');
-Route::get('documents/open/{id}','DocumentsController@open');
+Route::get('documents/open/{id}','DocumentsController@open')->name('documents.open');
 Route::get('mydocuments','DocumentsController@mydocuments');
 Route::get('/trash','DocumentsController@trash');
 Route::get('documents/restore/{id}','DocumentsController@restore');
 Route::delete('documentsDeleteMulti','DocumentsController@deleteMulti');
 
+//open embed link
+Route::get('documents/{id}/viewEmbedLink','DocumentsController@viewEmbedLink')->name('view.embed');
+
 //test-jen
 Route::get('documents/category/{id}','DocumentsController@showCategoryItem')->name('documents.category');
 Route::get('documents/category/{id}/subcategory','DocumentsController@showSubCategoryItem')->name('documents.subcategory');
-Route::get('documents/category/{parent_id}/subcategory/{id}','DocumentsController@showSubCategoryChildItem')->name('documents.subcategory.child');
+Route::get('documents/category/{parent_id}/subcategory/{id}','DocumentsController@showSubCategoryChildItem')->name('documents.subcategory.item');
 
 // search
 Route::post('/search','DocumentsController@search');

@@ -1,26 +1,23 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="row">
-    <div class="col-sm-1">
-        @include('inc.sidebar')
-    </div>
-    <div class="col-sm-11">
-        <main>
-        <div class="container-fluid">
-            <br> 
-            <div class="col-lg-12">
-                <h3 class="flow-text"><i class="material-icons">class</i>Sub Categories : {{$cat_name}}
-                    <button data-target="#modal1" data-toggle="modal" class="btn btn-info right">AddNew</button>
-                </h3>       
+<link href="{{ asset('css/custom.css') }}" rel="stylesheet" />
+<div class="row">
+    <div class="section">
+    <div class="col m1 hide-on-med-and-down">
+            @include('inc.sidebar')
+        </div>
+        <div class="col m11 s12">            
+            {{Breadcrumbs::render('subcategories', $id)}}      
+            <div class="row">
+                <h5 class="flow-text"><i class="material-icons">class</i>Sub Categories : {{$cat_name}}
+                    <button data-target="modal1" class="btn waves-effect waves-light modal-trigger right">Add New Sub Category</button>
+                </h5>      
+                <div class="divider"></div> 
             </div> 
-            <br>
-            <div class="divider"></div>
+            
             <div class="card z-depth-2">
             <div class="card-content">
-                {{-- <form action="{{ route('subcategoriesDeleteMulti') }}" method="post">
-                    {{ csrf_field() }}
-                    <button class="btn red waves-effect waves-light delete_all" type="submit">Delete All Selected</button> --}}
                 <button class="btn red waves-effect waves-light delete_all"
                     data-url="{{ url('subcategoriesDeleteMulti') }}">Delete All Selected</button>
                 <table class="responsive-table bordered centered highlight">
@@ -33,27 +30,52 @@
                     </thead>
                     <tbody>
                         @if (count($subcategories) > 0)
+                        
                             @foreach ($subcategories as $subcategory)
-                                <tr id="tr_{{ $subcategory->id }}">
-                                    <td>
-                                        <input type="checkbox" id="chk_{{ $subcategory->id }}" class="sub_chk"
-                                            data-id="{{ $subcategory->id }}">
-                                        <label for="chk_{{ $subcategory->id }}"></label>
-                                    </td>
-                                    <td>{{ $subcategory->name }}</td>
-                                    <td>
-                                        <!-- DELETE using link -->
-                                        {{--{!! Form::open(['action' => ['SubCategoryController@destroy', $subcategory->id], 'method' => 'POST', 'id' => 'form-delete-categories-' . $subcategory->id]) !!}--}}
-                                        <a href="#" class="left"><i class="material-icons"></i></a>
-                                        <a href="/categories/{{ $subcategory->id }}/edit" class="center"><i
-                                                class="material-icons">mode_edit</i></a>
-                                        <!-- <a href="/categories/{{ $subcategory->id }}/addSub" class="center"><i class="material-icons">mode_add</i></a>-->
-                                        <a href="" class="right data-delete"
-                                            data-form="categories-{{ $subcategory->id }}"><i
-                                                class="material-icons">delete</i></a>
-                                        {!! Form::close() !!}
-                                    </td>
-                                </tr>
+                            <tr class="indigo lighten-2">
+                                <td>
+                                    <input type="checkbox" id="chk_{{ $subcategory->id }}" class="sub_chk"
+                                        data-id="{{ $subcategory->id }}">
+                                    <label for="chk_{{ $subcategory->id }}"></label>
+                                </td>
+                                <td class="white-text text-white"><strong>{{ $subcategory->name }}</strong></td>
+                                <td>
+                                {!! Form::open(['action' => ['CategoriesController@destroy', $subcategory->id], 'method' => 'DELETE', 'id' => 'form-delete-categories-' . $subcategory->id]) !!}                                    
+                                    <!-- DELETE using link -->                                    
+                                    <!-- <a class="accordion-toggle" id="accordion_{{$subcategory->id}}" data-toggle="collapse" data-parent="#accordion_{{$subcategory->id}}" href="#collapse_{{$subcategory->id}}"><i
+                                                class="material-icons white-text text-white">expand_more</i></a> -->
+                                    <a href="/categories/{{ $subcategory->id }}/edit"><i
+                                                class="material-icons white-text text-white">mode_edit</i></a>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <!-- add new item under sub category-->
+                                    <a href="#modalAddSubItem"  class="addItem" data-id="{{$subcategory->id}}"><i class="material-icons white-text text-white">add</i></a>&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <a href="" class="data-delete" data-form="categories-{{ $subcategory->id }}"><i class="material-icons white-text text-white">delete</i></a>
+                                    
+                                {!! Form::close() !!}
+                                </td>
+                            </tr>
+                                @if(count($subcatitem) > 0)
+                                    @foreach($subcatitem[$subcategory->id] as $item)
+                                        @foreach($item as $i)
+                                        <tr class="hide-table-padding">   
+                                            <td>
+                                                <input type="checkbox" id="chk_{{ $i->id }}" class="sub_chk"
+                                                    data-id="{{ $i->id }}">
+                                                <label for="chk_{{ $i->id }}"></label>
+                                            </td> 
+                                            <td>{{ucwords($i->name)}}</td>                                                                            
+                                            <td>
+                                            {!! Form::open(['action' => ['CategoriesController@destroy', $i->id], 'method' => 'DELETE', 'id' => 'form-delete-categories-' . $i->id]) !!}
+                                            <a href="/categories/{{ $i->id }}/edit"><i
+                                                    class="material-icons">mode_edit</i></a> &nbsp;&nbsp;
+                                                <a href="" class="data-delete"
+                                                data-form="categories-{{ $i->id }}"><i
+                                                    class="material-icons">delete</i></a>    
+                                            {!! Form::close() !!}
+                                            </td>                               
+                                        </tr>
+                                        @endforeach
+                                    @endforeach
+                                @endif
                             @endforeach
                         @else
                             <tr>
@@ -65,118 +87,77 @@
                     </tbody>
                 </table>
             </div>
-        </div> 
+        </div>       
         </div>
-        <main>        
+    </div>    
+</div>
+<!-- Modal Structure -->
+<div id="modal1" class="modal">
+    <div class="modal-content">
+        <h5>Add Sub Category</h5>
+        {!! Form::open(['action' => ['SubCategoryController@store', $id], 'method' => 'POST', 'class' => 'col s12']) !!}
+        <div class="col s12 input-field">
+            <i class="material-icons prefix">class</i>
+            {{ Form::text('name', '', ['class' => 'validate', 'id' => 'name']) }}
+            <label for="name">Category Name</label>
+        </div>
+        <!-- <div class="col s12 input-field">
+            <i class="material-icons prefix">class</i>
+            {{ Form::text('parent_cat', $id, ['class' => 'validate', 'id' => 'parent_cat']) }}
+            <label for="parent_cat">Category Name</label>
+        </div> -->        
+    </div>        
+    <div class="modal-footer">
+        {{ Form::submit('submit', ['class' => 'btn']) }}
+        {!! Form::close() !!}
     </div>
-    </div>
-    <!-- Modal -->
-    <!-- Modal Structure -->
-    <div id="modal1" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Add Sub Category</h4>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                {!! Form::open(['action' => ['SubCategoryController@store', $id], 'method' => 'POST', 'class' => 'col s12']) !!}
-                <div class="col s12 input-field">
-                    <i class="material-icons prefix">class</i>
-                    {{ Form::text('name', '', ['class' => 'validate', 'id' => 'name']) }}
-                    <label for="name">Category Name</label>
-                </div>
-                <div class="col s12 input-field">
-                    <i class="material-icons prefix">class</i>
-                    {{ Form::text('parent_cat', $id, ['class' => 'validate', 'id' => 'parent_cat']) }}
-                    <label for="parent_cat">Category Name</label>
-                </div>
-            </div>
-            <div class="modal-footer">
-                {{ Form::submit('submit', ['class' => 'btn']) }}
-                {!! Form::close() !!}
-            </div>
-        </div>        
-    </div>
-@endsection
+</div>
 
-{{-- <script type="text/javascript">
-    $(document).ready(function () {
-        $('#master').on('click', function(e) {
-         if($(this).is(':checked',true))  
-         {
-            $(".sub_chk").prop('checked', true);  
-         } else {  
-            $(".sub_chk").prop('checked',false);  
-         }  
+<div id="modalAddSubItem" class="modal">
+    <div class="modal-content">
+    <form id="addSubItemForm">
+        <input type="hidden" name="subcatID" id="subcatID" value=""/>
+        <h5>Add Sub Category Item</h5>
+        <div class="col s12 input-field">
+            <i class="material-icons prefix">class</i>
+            {{ Form::text('name', '', ['class' => 'validate', 'id' => 'name']) }}
+            <label for="name">Item Name</label>
+        </div>            
+    </div>    
+    <div class="modal-footer">
+        {{ Form::submit('submit', ['class' => 'btn']) }}
+        {!! Form::close() !!}
+    </div> 
+    </form>   
+</div>
+@endsection
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () { 
+        $(".addItem").on('click', function(){
+            var ID = $(this).data('id');//subcat id
+            console.log(ID);
+            $('#subcatID').val(ID);            
         });
-        $('.delete_all').on('click', function(e) {
-            var allVals = [];  
-            $(".sub_chk:checked").each(function() {  
-                allVals.push($(this).attr('data-id'));
-            });  
-            if(allVals.length <=0)  
-            {  
-                alert("Please select row.");  
-            }  else {  
-                var check = confirm("Are you sure you want to delete this row?");  
-                if(check == true){  
-                    var join_selected_values = allVals.join(","); 
-                    $.ajax({
-                        url: $(this).data('url'),
-                        type: 'DELETE',
-                        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                        data: 'ids='+join_selected_values,
-                        success: function (data) {
-                            if (data.success) {
-                                $(".sub_chk:checked").each(function() {  
-                                    $(this).parents("tr").remove();
-                                });
-                                alert(data.msg);
-                                location.reload();
-                            } 
-                            else {
-                                alert('Whoops Something went wrong!!');
-                            }
-                        },
-                        error: function (data) {
-                            alert(data.responseText);
-                        }
-                    });
-                  $.each(allVals, function( index, value ) {
-                      $('table tr').filter("[data-row-id='" + value + "']").remove();
-                  });
-                }  
-            }  
-        });
-        $('[data-toggle=confirmation]').confirmation({
-            rootSelector: '[data-toggle=confirmation]',
-            onConfirm: function (event, element) {
-                element.trigger('confirm');
-            }
-        });
-        $(document).on('confirm', function (e) {
-            var ele = e.target;
-            e.preventDefault();
+        //submit form
+        $('#addSubItemForm').on('submit',function(event){           
+            event.preventDefault();            
+            var parent_id = {!! json_encode($id) !!}; //parent id
+            var data = $('#addSubItemForm').serialize()
+            // $('#modalAddSubItem').modal('show');
             $.ajax({
-                url: ele.href,
-                type: 'DELETE',
-                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                success: function (data) {
-                    if (data['success']) {
-                        $("#" + data['tr']).slideUp("slow");
-                        alert(data['success']);
-                    } else if (data['error']) {
-                        alert(data['error']);
-                    } else {
-                        alert('Whoops Something went wrong!!');
-                    }
+                url:"{{ route('subcat.store.item') }}",
+                method:"POST",
+                data:{
+                    "_token": "{{ csrf_token() }}",                    
+                    parent_id:parent_id,
+                    data:data,
                 },
-                error: function (data) {
-                    alert(data.responseText);
+                success:function(response){  
+                    window.location=response.url;
                 }
-            });
-            return false;
-        });
+            });            
+        }); 
     });
-</script> --}}
+</script> 
 

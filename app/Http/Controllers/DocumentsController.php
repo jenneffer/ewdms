@@ -25,7 +25,7 @@ class DocumentsController extends Controller
    */
   public function index()
   {  
-      if (auth()->user()->hasRole('Root')) {
+      if (auth()->user()->hasRole('Admin')) {
         // get all category
         $category = DB::table('category')->where('parent_id',0)->get();
         
@@ -36,7 +36,8 @@ class DocumentsController extends Controller
         //get the parent category yang user tu boleh access saja
         $category = DB::table('category')->where('parent_id',0)->whereIn('id', $permisible_parent_access)->get();
       }
-    return view('documents.category', compact('category'));
+    
+      return view('documents.category', compact('category'));
   }
 
   // my documents
@@ -99,7 +100,7 @@ class DocumentsController extends Controller
     $doc->url = $request->input('url');
     $doc->description = $request->input('description');
     $doc->user_id = $user_id;
-    $doc->department_id = $department_id;
+    $doc->department_id = !empty($department_id) ? $department_id : 0;
     // $category_id = (!empty($request->input('child_id'))) ? $request->input('child_id') : $request->input('parent_id');
     if(!empty($request->input('further_child_id'))){
       $category_id = $request->input('further_child_id');      
@@ -154,8 +155,8 @@ class DocumentsController extends Controller
     $cat= Category::findorFail($category_id);
     $parent_id = $cat->parent_id;
     $child_id = $cat->child_id;
-
-    return view('documents.show', compact('doc','parent_id','child_id','category_id'));
+    
+    return view('documents.show', compact('doc','parent_id','child_id','category_id','id'));
 
   }
 
@@ -176,8 +177,10 @@ class DocumentsController extends Controller
     
     $sub_cat_name=Category::where("parent_id", $parent_id)->where("child_id",0)->pluck('name', 'id');
     $child_list=Category::where("child_id",$cat->child_id)->pluck('name', 'id');
+    $child_id = $cat->child_id;
+   
 
-    return view('documents.edit', compact('doc','sub_cat_name','parent_id','category_id','p_cat_name','cat','child_list'));
+    return view('documents.edit', compact('doc','sub_cat_name','parent_id','category_id','p_cat_name','cat','child_list','child_id'));
   }
 
   /**
@@ -247,7 +250,7 @@ class DocumentsController extends Controller
     $ids = $request->ids;
     DB::table('document')->whereIn('id', explode(',', $ids))->delete();
 
-    \Log::addToLog('Selected Documents Are Deleted!');
+    \Log::addToLog('Selected Documents Are Deleted! '. $ids);
 
     // return redirect()->back()->with('success', 'Selected Documents Deleted!');
     return response()->json(['success' => true, 'msg'=>'Documents '.$ids.' Deleted!']);
@@ -347,9 +350,9 @@ class DocumentsController extends Controller
     // find out auth user role
     $user = auth()->user();
     // find trashed documents
-    if ($user->hasRole('Root')) {
+    if ($user->hasRole('Admin')) {
       $trash = Document::where('isExpire', 2)->get();
-    } elseif ($user->hasRole('Admin')) {
+    } elseif ($user->hasRole('Moderator')) {
       $trash = Document::where('isExpire', 2)->where('department_id', $user->department_id)->get();
     } else {
       $trash = Document::where('isExpire', 2)->where('user_id', $user->id)->get();
@@ -372,15 +375,18 @@ class DocumentsController extends Controller
 
   public function showCategoryItem($id){
       $arr_cat_same_parent = $this->arr_cat_from_same_parent($id);
-      if (auth()->user()->hasRole('Root')) {
+      if (auth()->user()->hasRole('Admin')) {
         // get all
         $docs = Document::where('isExpire', '!=', 2)->whereIn('category_id', $arr_cat_same_parent)->get();
         
       } else {
-        $user_role_id = auth()->user()->role;      
-        $arr_category = $this->getCategoryPermissions($user_role_id); //category id yang user boleh access            
+        $user_role_id = auth()->user()->role;    
+        
+        $arr_category = $this->getCategoryPermissions($user_role_id); //category id yang user boleh access    
         //category id $id or parent_id is $id
-        $docs = DB::table('document')->where('user_id', '!=', auth()->user()->id)->whereIn('category_id',$arr_category)->whereIn('category_id', $arr_cat_same_parent)->get();
+        // $docs = DB::table('document')->where('user_id', '!=', auth()->user()->id)->whereIn('category_id',array_filter(array_unique($arr_category),'strlen'))->get();
+        // $docs = DB::table('document')->where('user_id', '!=', auth()->user()->id)->where('category_id',$id)->get();
+        $docs = DB::table('document')->where('category_id',$id)->get();
         
       }
       //find parent_id for breadcrumb purpose
@@ -392,15 +398,46 @@ class DocumentsController extends Controller
   }
 
   public function showSubCategoryItem($id){
-    $subcategory = DB::table('category')->where('parent_id',$id)->where('child_id',0)->get();
-    return view('documents.subcategory', compact('subcategory','id'));
+    //get the sub category from table category
+    if(auth()->user()->hasRole('Admin')){
+      $subcategory = DB::table('category')->where('parent_id',$id)->where('child_id',0)->get();
+      //check if there's file under that particular category
+      $docs = Document::where('category_id', $id)->get();
+    }
+    else{
+      $user_role_id = auth()->user()->role;           
+      $arr_category = $this->getCategoryPermissions($user_role_id); //category id yang user boleh access
+      
+      $permisible_parent_access = array_filter(array_unique($arr_category),'strlen'); //filter duplicate value and remove null value in the array
+      //get the parent category yang user tu boleh access saja
+      $subcategory = DB::table('category')->where('parent_id',$id)->where('child_id',0)->whereIn('id', $permisible_parent_access)->get();
+      $docs = Document::where('category_id', $id)->get();
+    }
+
+    return view('documents.subcategory', compact('subcategory','docs','id'));
   }
 
-  public function showSubCategoryChildItem($parent_id,$id){    
-    $subcategoryItem = DB::table('category')->where('parent_id',$parent_id)->where('child_id',$id)->get();    
-    return view('documents.subcategory-item', compact('subcategoryItem','parent_id','id'));
+  public function showSubCategoryChildItem( $parent_id, $id ){    
+    if(auth()->user()->hasRole('Admin')){
+      $subcategory = DB::table('category')->where('parent_id',$parent_id)->where('child_id',$id)->get();
+
+      $docs = Document::where('category_id', $id)->get();
+    }
+    else{
+      $user_role_id = auth()->user()->role;           
+      $arr_category = $this->getCategoryPermissions($user_role_id); //category id yang user boleh access
+      
+      $permisible_parent_access = array_filter(array_unique($arr_category),'strlen'); //filter duplicate value and remove null value in the array
+      //get the parent category yang user tu boleh access saja
+     
+      $subcategory = DB::table('category')->where('parent_id',$parent_id)->where('child_id',$id)->get(); 
+      $docs = Document::where('category_id', $id)->get();
+
+    }
+
+    return view('documents.subcategory-item', compact('subcategory','docs','parent_id','id'));
   }
-  public function getCategoryPermissions($user_role_id){
+  public function getCategoryPermissions($user_role_id){    
     //get role's permissions      
     $permissions = DB::table('role_has_permissions')->where('role_id','=', $user_role_id)->get();      
     $permissionIDs = [];
@@ -426,72 +463,10 @@ class DocumentsController extends Controller
     return $IDs;
   }
 
-  // public function getPermissionsCategory(){
-    
-  //   $arr_category = [];
-  //   if(auth()->user()->hasPermissionTo('sop_access')){
-  //       array_push($arr_category,1);        
-  //   }
-  //   if(auth()->user()->hasPermissionTo('creative_guide_access')){
-  //       array_push($arr_category,2);
-  //   }
-  //   if(auth()->user()->hasPermissionTo('medical_access')){
-  //       array_push($arr_category,3);
-  //   }
-  //   if(auth()->user()->hasPermissionTo('non_medical_access')){
-  //       array_push($arr_category,4);
-  //   }
-  //   if(auth()->user()->hasPermissionTo('medical_guidelines')){
-  //       array_push($arr_category,5);
-  //   }
-  //   if(auth()->user()->hasPermissionTo('non_medical_guidelines')){
-  //       array_push($arr_category,8);
-  //   }
-  //   if(auth()->user()->hasPermissionTo('medical_flowchart_access')){
-  //       array_push($arr_category,6);
-  //   }
-  //   if(auth()->user()->hasPermissionTo('non_medical_flowchart_access')){
-  //       array_push($arr_category,9);
-  //   }
-  //   if(auth()->user()->hasPermissionTo('medical_sop_form_access')){
-  //       array_push($arr_category,7);
-  //   }
-  //   if(auth()->user()->hasPermissionTo('non_medical_sop_form_access')){
-  //       array_push($arr_category,10);
-  //   }
-  //   if(auth()->user()->hasPermissionTo('creative_guide_access')){
-  //       array_push($arr_category,2);
-  //   }
-  //   if(auth()->user()->hasPermissionTo('general_template_access')){
-  //       array_push($arr_category,11);
-  //   }
-  //   if(auth()->user()->hasPermissionTo('branding_guidelines_access')){
-  //       array_push($arr_category,12);
-  //   }
-  //   if(auth()->user()->hasPermissionTo('letterhead_access')){
-  //       array_push($arr_category,13);
-  //   }
-  //   if(auth()->user()->hasPermissionTo('name_card_access')){
-  //       array_push($arr_category,14);
-  //   }
-  //   if(auth()->user()->hasPermissionTo('uniform_access')){
-  //       array_push($arr_category,15);
-  //   }
-  //   if(auth()->user()->hasPermissionTo('collaterals_access')){
-  //       array_push($arr_category,16);
-  //   }
-  //   if(auth()->user()->hasPermissionTo('images_access')){
-  //       array_push($arr_category,17);
-  //   }
-  //   if(auth()->user()->hasPermissionTo('marketing_access')){
-  //       array_push($arr_category,18);
-  //   }
-  //   if(auth()->user()->hasPermissionTo('product_brochures_access')){
-  //       array_push($arr_category,19);
-  //   }
-  //   if(auth()->user()->hasPermissionTo('poster_access')){
-  //       array_push($arr_category,20);
-  //   }	
-  //   return $arr_category;
-  // }
+  public function viewEmbedLink($id){
+    $doc = DB::table('document')
+              ->join('category','document.category_id','=','category.id')->where('document.id', $id)->first();
+
+    return view('documents.view-embed', compact('doc'));
+  }
 }

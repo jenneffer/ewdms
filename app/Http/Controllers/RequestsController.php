@@ -19,11 +19,11 @@ class RequestsController extends Controller
      */
     public function index()
     {
-        if (auth()->user()->hasRole('Admin'))
+        if (auth()->user()->hasRole('Moderator'))
         {
             $users = User::where('status',false)->where('department_id',auth()->user()->department_id)->get();
         }
-        elseif (auth()->user()->hasRole('Root')) {
+        elseif (auth()->user()->hasRole('Admin')) {
             $users = User::where('status',false)->get();
         }
 

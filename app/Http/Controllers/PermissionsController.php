@@ -10,9 +10,8 @@ use App\Category;
 class PermissionsController extends Controller
 {
     public function __construct() {
-        return $this->middleware(['auth']);
+        return $this->middleware(['auth','role:Admin|Moderator']);
     }
-
     /**
      * Display a listing of the resource.
      *
@@ -48,8 +47,17 @@ class PermissionsController extends Controller
         // $permission = Permission::create($request->all());
         $permission = new Permission;
         $permission->name = $request->input('name');
-
-        $category_id = (!empty($request->input('child_id'))) ? $request->input('child_id') : $request->input('parent_id');
+        
+        if(!empty($request->input('sub_child_id'))){
+            $category_id = $request->input('sub_child_id');
+        } 
+        elseif(!empty($request->input('child_id'))){
+            $category_id = $request->input('child_id');
+        } 
+        else {
+            $category_id = $request->input('parent_id');
+        }
+        
         $permission->category_id = $category_id;
         // save to db
         $permission->save();
@@ -88,7 +96,7 @@ class PermissionsController extends Controller
             $p_cat_name = Category::where("parent_id", 0)->pluck('name', 'id');
 
             $sub_cat_name=Category::where("parent_id", $parent_id)->where("child_id",0)->pluck('name', 'id');
-            $child_list=Category::where("child_id",$cat->child_id)->pluck('name', 'id');
+            $child_list=Category::where("child_id",$category_id)->pluck('name', 'id');
 
         }else{
             $cat = "";
@@ -118,7 +126,15 @@ class PermissionsController extends Controller
         $permission = Permission::findOrFail($id);
         $permission->name = $request->input('name');
 
-        $category_id = (!empty($request->input('subcat_id'))) ? $request->input('subcat_id') : $request->input('parent_id');
+        if(!empty($request->input('sub_child_id'))){
+            $category_id = $request->input('sub_child_id');
+        } 
+        elseif(!empty($request->input('child_id'))){
+            $category_id = $request->input('child_id');
+        } 
+        else {
+            $category_id = $request->input('parent_id');
+        }
         $permission->category_id = $category_id;
         // save to db
         $permission->save();

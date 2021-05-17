@@ -14,11 +14,11 @@
     <li class="collection-item avatar">
       <a href="/categories" class="tooltipped" data-position="right" data-delay="50" data-tooltip="Categories"><i class="material-icons circle brown">class</i></a>
     </li>
-    @hasanyrole('Root|Admin')
+    @hasanyrole('Admin|Moderator')
     <li class="collection-item avatar">
       <a href="/users" class="tooltipped" data-position="right" data-delay="50" data-tooltip="Users"><i class="material-icons circle green">person</i></a>
     </li>
-    @hasrole('Root')
+    @hasrole('Admin|Moderator')
     <!-- <li class="collection-item avatar">
       <a href="/departments" class="tooltipped" data-position="right" data-delay="50" data-tooltip="Departments"><i class="material-icons circle red darken-1">group</i></a>
     </li> -->
@@ -33,7 +33,7 @@
     </li>
     @endhasrole
     @endhasanyrole
-    @hasanyrole('Admin|User')
+    @hasanyrole('Moderator|User')
     <li class="collection-item avatar">
       <a href="/mydocuments" class="tooltipped" data-position="right" data-delay="50" data-tooltip="My Documents"><i class="material-icons circle pink darken-1">folder_shared</i></a>
     </li>
@@ -50,9 +50,9 @@
   <!-- <li><a href="/shared"><i class="material-icons">share</i>Share</a></li> -->
   <li><a href="/documents"><i class="material-icons">folder</i>Documents</a></li>
   <li><a href="/categories"><i class="material-icons">class</i>Categories</a></li>
-  @hasanyrole('Root|Admin')
+  @hasanyrole('Admin|Moderator')
   <li><a href="/users"><i class="material-icons">person</i>Users</a></li>
-  @hasrole('Root')
+  @hasrole('Admin|Moderator')
   <!-- <li><a href="/departments"><i class="material-icons">group</i>Departments</a></li> -->
   <li><div class="divider"></div></li>
   <li><a href="/roles"><i class="material-icons">assignment_ind</i>Roles &amp; Permissions</a></li>
@@ -60,7 +60,7 @@
   <li><a href="/logs"><i class="material-icons">view_list</i>Logs</a></li>
   @endhasrole
   @endhasanyrole
-  @hasanyrole('Admin|User')
+  @hasanyrole('Moderator|User')
   <li>
     <a href="/mydocuments"><i class="material-icons">folder_shared</i>My Documents</a>
   </li>

@@ -8,7 +8,7 @@ use App\Department;
 class DepartmentsController extends Controller
 {
     public function __construct() {
-        return $this->middleware(['auth','role:Root']);
+        return $this->middleware(['auth','role:Admin']);
     }
 
     /**

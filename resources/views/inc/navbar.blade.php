@@ -16,11 +16,11 @@
         <li><a href="/documents">Documents</a></li>
         <li><a href="/mydocuments">My Documents</a></li>
         <li><a href="/categories">Categories</a></li>
-        @hasanyrole('Root|Admin')
+        @hasanyrole('Admin|Moderator')
         <li><a href="/users">Users</a></li>
         <li><a href="/departments">Departments</a></li>
         <li><a href="/logs">Logs</a></li>
-        @hasrole('Root')
+        @hasrole('Admin')
         <li><a href="/backup">Backup</a></li>
         @endhasrole
         @endhasanyrole
@@ -44,7 +44,7 @@
       <!-- Authentication Links -->
       @if (Auth::guest())
         <li><a href="{{ route('login') }}">Login</a></li>
-        <li><a href="{{ route('register') }}">Register</a></li>
+        <!-- <li><a href="{{ route('register') }}">Register</a></li> -->
       @else
         <!-- Dropdown Trigger -->
         <li>
@@ -57,7 +57,7 @@
           <a href="/trash"><i class="material-icons">delete</i></a>
           @endif
         </li>
-        @hasanyrole('Root|Admin')
+        @hasanyrole('Admin|Moderator')
         <li>
           <a href="/requests">Requests<span class="new badge white-text">{{ $requests }}</span></a>
         </li>

@@ -21,9 +21,14 @@ class SubCategoryController extends Controller
      */
     public function index($id)
     {
-        $subcategories = SubCategory::where('parent_cat', $id)->get();
+        $subcategories = Category::where('parent_id', $id)->where('child_id',0)->get();      
+        //construct array category-sub category-subcategoryitem  
         $cat_name= Category::findName($id);
-        return view('subcat.index', compact('subcategories','id','cat_name'));
+        $subcatitem = [];
+        foreach($subcategories as $sub){
+            $subcatitem[$sub->id][] = DB::table("category")->where('child_id',$sub->id)->get();
+        }
+        return view('subcat.index', compact('subcategories','id','cat_name','subcatitem'));
         //return view('subcat.index', compact('subcategories','id'));
     }
 
@@ -50,16 +55,43 @@ class SubCategoryController extends Controller
         ]);
 
         //$cate = SubCategory::create([$request->input('name')]);
-        $cate = new SubCategory;
+        // $cate = new SubCategory;
+        // $cate->name = $request->input('name');
+        // $cate->parent_cat = $id;
+        // $cate->created_by = auth()->user()->id;
+        // $cate->save();
+        $cate = new Category;
         $cate->name = $request->input('name');
-        $cate->parent_cat = $id;
+        $cate->parent_id = $id;
+        $cate->child_id = 0;
         $cate->created_by = auth()->user()->id;
         $cate->save();
         \Log::addToLog('New sub category ' . $request->input('name') . ' was added');
 
         
-        return redirect('/categories/'.$id.'/addSub')->with('success','Sub Category Added');
+        return redirect('/categories/'.$id.'/showSub')->with('success','Sub Category Added');
     }
+
+    public function storeSubCategoryItem(Request $request){
+        $parent_id = $request->parent_id;
+        $data = $request->data;        
+        $param = array();
+        parse_str($data, $param); //unserialize jquery string data         
+        $subcatId = $param['subcatID'];  
+        $catName =  $param['name'];  
+
+        $cate = new Category;
+        $cate->name = $catName;
+        $cate->parent_id = $parent_id;
+        $cate->child_id = $subcatId;
+        $cate->created_by = auth()->user()->id;
+        $cate->save();
+        \Log::addToLog('New sub category item ' . $request->input('name') . ' was added');
+
+        
+        // // return redirect('/categories/'.$id.'/showSub')->with('success','Sub Category Item Added');
+        return response()->json(['success' => true, 'msg'=>'Sub Category Item Added', 'url'=> '/categories/'.$parent_id.'/showSub']);
+    } 
 
     /**
      * Display the specified resource.
@@ -103,7 +135,7 @@ class SubCategoryController extends Controller
      */
     public function destroy($id)
     {
-        $cate = SubCategory::find($id);
+        $cate = Category::find($id);
         $cate->delete();
 
         $cate->documents()->detach();
@@ -120,7 +152,7 @@ class SubCategoryController extends Controller
         //dd($ids);
         //$parent_cat=SubCategory::where('id', '=', $ids)->limit(1)->pluck('parent_cat');
         
-        DB::table("sub_category")->whereIn('id', explode(",", $ids))->delete();
+        DB::table("category")->whereIn('id', explode(",", $ids))->delete();
 
         \Log::addToLog('All sub categories '.$ids.' were deleted');
 
@@ -129,4 +161,5 @@ class SubCategoryController extends Controller
         return response()->json(['success' => true, 'msg'=>'Sub Categories '.$ids.' Deleted!']);
         
     }
+
 }

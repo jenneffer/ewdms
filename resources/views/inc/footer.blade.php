@@ -10,7 +10,7 @@
   <div class="footer-copyright indigo darken-3">
     <div class="container">
     © {{ Date('Y') }} Copyright @ EUROPEAN WELLNESS
-    <a class="grey-text text-lighten-4 right" href="#modal2" data-target="#modal2" data-toggle="modal">Help</a>
+    <!-- <a class="grey-text text-lighten-4 right" href="#modal2" data-target="#modal2" data-toggle="modal">Help</a> -->
     </div>
   </div>
 </footer>

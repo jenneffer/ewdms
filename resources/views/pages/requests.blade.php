@@ -19,15 +19,16 @@
 </style>
 <div class="row">
   <div class="section">
-    <div class="col m1 hide-on-med-and-down">
-      @include('inc.sidebar')
-    </div>
-    <div class="col m11 s12">
+  <div class="col m1 hide-on-med-and-down">
+    @include('inc.sidebar')
+  </div>
+  <div class="col m11">
       <div class="row">
-        <h3 class="flow-text"><i class="material-icons">notifications</i> Account Registration Requests</h3>
-        <div class="divider"></div>
+        <h5 class="flow-text"><i class="material-icons">notifications</i> Account Registration Requests</h5>       
+        <div class="divider"></div> 
       </div>
-      <div class="row">
+      
+      <div class="row col m11 s12">
         @if(count($users) > 0)
           @foreach($users as $user)
             <div class="card grey lighten-4 horizontal">
@@ -69,7 +70,8 @@
           </div>
         @endif
       </div>
-    </div>
+  </div>
+
   </div>
 </div>
 @endsection

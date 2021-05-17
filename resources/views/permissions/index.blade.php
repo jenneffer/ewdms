@@ -105,6 +105,11 @@
                 <select name="child_id" class="form-control"></select>
                 <label for="title">Sub Category</label>
             </div>
+            <div class="col s12 input-field">
+                <i class="material-icons prefix">class</i>
+                <select name="sub_child_id" class="form-control"></select>
+                <label for="title">Sub Category</label>
+            </div>
         </div>
 
         <div class="modal-footer">

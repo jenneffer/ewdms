@@ -21,23 +21,27 @@
             <div class="card hoverable indigo lighten-1 white-text">
               <div class="card-content">
                 <p class="center"><i class="large material-icons">folder</i></p>
-                <h4 class="center-align flow-text">Documents<span class="new badge white-text">336</span></h4>
+                <h4 class="center-align flow-text">Documents
+                  <!-- <span class="new badge white-text">336</span> belum buat-->
+                </h4>
               </div>
             </div>
           </div>
         </a>
-        @hasrole('Root|Admin')
+        @hasrole('Admin|Moderator')
         <a href="/users">
           <div class="col m4 s6">
             <div class="card hoverable indigo lighten-1 white-text">
               <div class="card-content">
                 <p class="center"><i class="large material-icons">person</i></p>
-                <h4 class="center-align flow-text">Users<span class="new badge white-text">45</span></h4>
+                <h4 class="center-align flow-text">Users
+                  <!-- <span class="new badge white-text">45</span> belum buat-->
+                </h4>
               </div>
             </div>
           </div>
         </a>
-        <a href="/departments">
+        <!-- <a href="/departments">
           <div class="col m4 s6">
             <div class="card hoverable indigo lighten-1 white-text">
               <div class="card-content">
@@ -46,7 +50,7 @@
               </div>
             </div>
           </div>
-        </a>
+        </a> -->
         <a href="/roles">
           <div class="col m4 s6">
             <div class="card hoverable indigo lighten-1 white-text">
