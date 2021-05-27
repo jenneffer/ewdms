@@ -11,7 +11,9 @@
     {{Breadcrumbs::render('subcategoryitemlist', $parent_id, $child_id, $id)}}  
       <div class="row">
         <h5 class="flow-text"><i class="material-icons">folder</i> {{App\Category::findName($id)}} Documents
+        @can('delete')
         <button class="btn red waves-effect waves-light right tooltipped delete_all" data-url="{{ url('documentsDeleteMulti') }}" data-position="left" data-delay="50" data-tooltip="Delete Selected Documents"><i class="material-icons">delete</i></button>
+        @endcan
         @can('upload')
           <a href="/documents/create" class="btn waves-effect waves-light right tooltipped" data-position="left" data-delay="50" data-tooltip="Upload New Document"><i class="material-icons">file_upload</i></a>
         @endcan

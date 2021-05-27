@@ -10,13 +10,13 @@
   <div class="footer-copyright indigo darken-3">
     <div class="container">
     © {{ Date('Y') }} Copyright @ EUROPEAN WELLNESS
-    <!-- <a class="grey-text text-lighten-4 right" href="#modal2" data-target="#modal2" data-toggle="modal">Help</a> -->
+    <a class="grey-text text-lighten-4 right" href="#modal2" data-target="#modal2" data-toggle="modal">Help</a>
     </div>
   </div>
 </footer>
 
 <!-- Modal For Help -->
-<div id="modal2" class="modal">
+<!-- <div id="modal2" class="modal">
   <div class="modal-content">
     <div class="modal-header">
     <h4 class="modal-title">Help</h4>
@@ -33,5 +33,47 @@
     <div class="modal-footer">
       <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat " data-dismiss="modal">OK</a>
     </div>
+  </div>  
+</div> -->
+<div id="modal2" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+    <h4 class="modal-title">Helpdesk/Enquiries</h4>
+    </div>    
+    <div class="modal-body">
+    {!! Form::open(['action' => ['EnquiriesController@store'], 'method' => 'POST', 'class' => 'col s12', 'files' => true]) !!}
+      <div class="col s12 input-field">
+          <i class="material-icons prefix">person</i>
+          {{ Form::text('name','', ['class' => 'validate', 'id' => 'name']) }}
+          <label for="name">Your Name</label>
+      </div> 
+      <div class="col s12 input-field">
+          <i class="material-icons prefix">email</i>
+          {{ Form::email('email','', ['class' => 'validate', 'id' => 'email']) }}
+          <label for="email">Your Email</label>
+      </div> 
+      <div class="col s12 input-field">
+          <i class="material-icons prefix">title</i>
+          {{ Form::text('title','', ['class' => 'validate', 'id' => 'title']) }}
+          <label for="title">Title</label>
+      </div> 
+      <div class="col s12 input-field">
+          <i class="material-icons prefix">comment</i>
+          {{ Form::text('content','', ['class' => 'validate', 'id' => 'content']) }}
+          <label for="content">Content</label>
+      </div> 
+      <div class="col s12 input-field">
+          <i class="material-icons prefix">attachment</i>
+          {{ Form::file('attachment[]',['class' => 'validate', 'id' => 'attachment', 'multiple' => 'multiple']) }}          
+      </div>      
+      <div class="col s12">
+        <span style="color:red;">**</span><label> You can attach multiple files</label>
+      </div> 
+    </div>
+    <div class="modal-footer">
+      <!-- <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat " data-dismiss="modal">OK</a> -->
+      {{ Form::submit('submit', ['class' => 'btn']) }}
+    </div>    
+    {!! Form::close() !!}
   </div>  
 </div>

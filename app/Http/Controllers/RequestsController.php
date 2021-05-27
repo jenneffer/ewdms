@@ -21,7 +21,8 @@ class RequestsController extends Controller
     {
         if (auth()->user()->hasRole('Moderator'))
         {
-            $users = User::where('status',false)->where('department_id',auth()->user()->department_id)->get();
+            // $users = User::where('status',false)->where('department_id',auth()->user()->department_id)->get();
+            $users = User::where('status',false)->get();
         }
         elseif (auth()->user()->hasRole('Admin')) {
             $users = User::where('status',false)->get();

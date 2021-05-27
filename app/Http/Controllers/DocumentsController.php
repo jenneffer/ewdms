@@ -353,7 +353,8 @@ class DocumentsController extends Controller
     if ($user->hasRole('Admin')) {
       $trash = Document::where('isExpire', 2)->get();
     } elseif ($user->hasRole('Moderator')) {
-      $trash = Document::where('isExpire', 2)->where('department_id', $user->department_id)->get();
+      // $trash = Document::where('isExpire', 2)->where('department_id', $user->department_id)->get();
+      $trash = Document::where('isExpire', 2)->get();
     } else {
       $trash = Document::where('isExpire', 2)->where('user_id', $user->id)->get();
     }
@@ -419,7 +420,11 @@ class DocumentsController extends Controller
 
   public function showSubCategoryChildItem( $parent_id, $id ){    
     if(auth()->user()->hasRole('Admin')){
-      $subcategory = DB::table('category')->where('parent_id',$parent_id)->where('child_id',$id)->get();
+      // $subcategory = DB::table('category')->where('parent_id',$parent_id)->where('child_id',$id)->get();
+      $subcategory = DB::table('category')
+          ->select(DB::raw('(SELECT COUNT(*) FROM document WHERE category_id = category.id) as doc_count, category.*'))
+          ->where('parent_id', $parent_id)
+          ->where('child_id',$id)->get();
 
       $docs = Document::where('category_id', $id)->get();
     }
@@ -430,10 +435,17 @@ class DocumentsController extends Controller
       $permisible_parent_access = array_filter(array_unique($arr_category),'strlen'); //filter duplicate value and remove null value in the array
       //get the parent category yang user tu boleh access saja
      
-      $subcategory = DB::table('category')->where('parent_id',$parent_id)->where('child_id',$id)->get(); 
+      // $subcategory = DB::table('category')->where('parent_id',$parent_id)->where('child_id',$id)->get(); 
+      $subcategory = DB::table('category')
+          ->select(DB::raw('(SELECT COUNT(*) FROM document WHERE category_id = category.id) as doc_count, category.*'))
+          ->where('parent_id', $parent_id)
+          ->where('child_id',$id)->get();
+      
       $docs = Document::where('category_id', $id)->get();
 
     }
+
+
 
     return view('documents.subcategory-item', compact('subcategory','docs','parent_id','id'));
   }

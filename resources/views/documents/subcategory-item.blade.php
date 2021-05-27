@@ -47,7 +47,7 @@
             @foreach($subcategory as $sub)
             <tr>
               <td>&nbsp;</td>
-              <td><a href="{{route("documents.category",[$sub->id])}}">{{App\Category::findName($sub->id)}}</a></td>
+              <td><a href="{{route("documents.category",[$sub->id])}}">{{App\Category::findName($sub->id)}} ({{$sub->doc_count}})</a></td>
               <td>&nbsp;</td>
               <td>&nbsp;</td>
               <td>&nbsp;</td>

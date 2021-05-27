@@ -97,8 +97,12 @@ Route::get('backup/delete','BackupController@delete');
 Route::get('logs','LogController@log');
 Route::get('logsdel','LogController@logdel');
 
+//enquiries
+Route::resource('enquiries','EnquiriesController');
 
+// Email related routes
+// Route::get('mail/send', 'MailController@send');
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+// Route::get('/home', 'HomeController@index')->name('home');

@@ -4,7 +4,7 @@
     <script>
         function gotoUpload() {
             var docId = $("#document_id").val();
-            var urlToUp = "{{route('documents.files.create', '')}}"+"/"+docId;
+            var urlToUp = "{{route('documents.file.create', '')}}"+"/"+docId;
             console.log(urlToUp);
             window.location.href = urlToUp;
             return false;
@@ -63,11 +63,11 @@
                             <div class="form-group">
                                 <label for="">Choose {{ucfirst(config('settings.document_label_singular'))}}</label>
                                 <select name="document_id" id="document_id" class="form-control select2">
-                                    @foreach ($documents as $document)
+                                    <!-- @foreach ($documents as $document)
                                         @can('view',$document)
                                             <option value="{{$document->id}}">{{$document->name}}</option>
                                         @endcan
-                                    @endforeach
+                                    @endforeach -->
                                 </select>
                             </div>
                             <div class="form-group">
@@ -83,7 +83,7 @@
 
                     <div class="info-box-content">
                         <span class="info-box-text">{{ucfirst(config('settings.tags_label_plural'))}}</span>
-                        <span class="info-box-number">{{$tagCounts}}</span>
+                        <!-- <span class="info-box-number">{{$tagCounts}}</span> -->
                         <span class="progress-description">
                     Total {{ucfirst(config('settings.tags_label_plural'))}} in system
                   </span>
@@ -95,7 +95,7 @@
 
                     <div class="info-box-content">
                         <span class="info-box-text">{{ucfirst(config('settings.document_label_plural'))}}</span>
-                        <span class="info-box-number">{{$documentCounts}}</span>
+                        <!-- <span class="info-box-number">{{$documentCounts}}</span> -->
                         <span class="progress-description">
                     Containing {{$filesCounts}} {{ucfirst(config('settings.file_label_plural'))}}
                   </span>

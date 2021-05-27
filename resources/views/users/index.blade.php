@@ -23,28 +23,33 @@
               <tr>
                   <th>Name</th>
                   <th>Role</th>
-                  <!-- <th>Department</th> -->
                   <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               @if(count($users) > 0)
                 @foreach($users as $user)
-                  @if(!$user->hasRole('Admin'))
                   <tr>
                     <td>{{ $user->name }}</td>
-                    <td>{{ $user->roles()->pluck('name')->implode(' ') }}</td>
-                    <!-- <td>{{ $user->department['dptName'] }}</td> -->
+                    <td>{{ $user->roles()->pluck('name')->implode(' ') }}</td>                    
                     <td>
                       <!-- DELETE using link -->
+                      
                       {!! Form::open(['action' => ['UsersController@destroy', $user->id],'method' => 'DELETE','id' => 'form-delete-users-' . $user->id]) !!}
+                      @if(auth()->user()->hasRole('Admin'))
                       <a href="" data-id="{{ $user->id }}" class="left data-inactive"><i class="material-icons">visibility</i></a><!-- deactivate user-->
                       <a href="/users/{{ $user->id }}/edit" class="center"><i class="material-icons">mode_edit</i></a>                                            
                       <a href="" class="right data-delete" data-form="users-{{ $user->id }}"><i class="material-icons">delete</i></a>
+                      @else
+                        @if($user->roles()->pluck('name')->implode(' ') !='Admin')
+                        <a href="" data-id="{{ $user->id }}" class="left data-inactive"><i class="material-icons">visibility</i></a><!-- deactivate user-->
+                        <a href="/users/{{ $user->id }}/edit" class="center"><i class="material-icons">mode_edit</i></a>                                            
+                        <a href="" class="right data-delete" data-form="users-{{ $user->id }}"><i class="material-icons">delete</i></a>
+                        @endif
+                      @endif
                       {!! Form::close() !!}
                     </td>
                   </tr>
-                  @endif
                 @endforeach
               @else
                 <tr>

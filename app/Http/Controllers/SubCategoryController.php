@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Redirect;
 use App\SubCategory;
 use App\Category;
+use App\Permission;
 use DB;
 
 class SubCategoryController extends Controller
@@ -68,6 +69,15 @@ class SubCategoryController extends Controller
         $cate->save();
         \Log::addToLog('New sub category ' . $request->input('name') . ' was added');
 
+        //auto add permission when add new sub category
+        $permission = new Permission;
+        $permission->name = $request->input('name');
+        $permission->guard_name = 'web'; 
+        $permission->category_id = $id;
+        // save to db
+        $permission->save();
+
+        \Log::addToLog('New permission ' . $request->input('name') . ' was added');
         
         return redirect('/categories/'.$id.'/showSub')->with('success','Sub Category Added');
     }

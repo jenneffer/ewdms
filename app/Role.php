@@ -21,5 +21,12 @@ class Role extends Model
     {
         return $this->belongsToMany(Permission::class);
     }
+
+    public static function findID($name)
+    {
+        $id = Role::where('name', '=', $name)->pluck('id');
+
+        return $id[0]?? '--';
+    }
     
 }

@@ -8,6 +8,7 @@ use App\User;
 use App\Department;
 // for assigning roles
 use Spatie\Permission\Models\Role;
+use DB;
 
 class UsersController extends Controller
 {
@@ -43,8 +44,9 @@ class UsersController extends Controller
         $depts = Department::all();
         // get roles
         if (auth()->user()->hasRole('Admin'))
-        {
-          $roles = Role::where('name','!=','Admin')->get();
+        {          
+          // $roles = Role::where('name','!=','Admin')->get();
+          $roles = Role::all();          
         }
         else
         {
@@ -124,7 +126,8 @@ class UsersController extends Controller
         // get roles
         if (auth()->user()->hasRole('Admin'))
         {
-          $roles = Role::where('name','!=','Admin')->get();
+          // $roles = Role::where('name','!=','Admin')->get();
+          $roles = Role::all();
         }
         else
         {
@@ -148,29 +151,15 @@ class UsersController extends Controller
           // 'department_id' => 'required',
           'role' => 'required',
         ]);
-
         $user = User::findOrFail($id);
         $user->name = $request->input('name');
         $user->email = $request->input('email');
-        // $user->department_id = $request->input('department_id');
-        // if ($request->input('status')) {
-        //     $user->status = true;
-        // }
-        // else{
-        //     $user->status = false;
-        // }
-        $user->save();
-        // $role_id = $request->input('role');
-        //
-        // // get the obj of current role
-        // $curr_role = Role::findByName($user->roles->pluck('name')->implode(' '));
-        // // get the obj of new role
-        // $new_role = Role::where('id',$role_id)->firstOrFail();
-        // // first remove current role
-        // $user->removeRole($curr_role);
-        // // then assign the new role
-        // $user->assignRole($new_role);
 
+        //get role id to be updated in user table
+        $role_id = DB::table("roles")->where("name", $request->input('role'))->pluck('id')->first();  
+        $user->role = $role_id;
+        $user->save();
+       
         if ($request->input('role') !== $user->roles->pluck('name')->implode(' ')) {
           // first remove current role
           $user->removeRole($user->roles->pluck('name')->implode(' '));
