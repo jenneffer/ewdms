@@ -58,8 +58,11 @@
           @endif
         </li>
         @hasanyrole('Admin|Moderator')
-        <li>
+        <!-- <li>
           <a href="/requests">Requests<span class="new badge white-text">{{ $requests }}</span></a>
+        </li> -->
+        <li>
+          <a href="/nda">NDA Submissions<span class="new badge white-text">{{ $submissions }}</span></a>
         </li>
         @endhasanyrole
         <li>

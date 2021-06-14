@@ -92,8 +92,7 @@
                   @endcan
                   {!! Form::close() !!}
                   <!-- DELETE using link -->
-                  {!! Form::open(['action' => ['DocumentsController@destroy', $doc->id],
-                  'method' => 'DELETE', 'id' => 'form-delete-documents-' . $doc->id]) !!}
+                  {!! Form::open(['action' => ['DocumentsController@destroy', $doc->id],'method' => 'DELETE', 'id' => 'form-delete-documents-' . $doc->id]) !!}
                   @can('delete')
                   <a href="" class="data-delete tooltipped" data-position="left" data-delay="50" data-tooltip="Delete" data-form="documents-{{ $doc->id }}"><i class="material-icons">delete</i></a>
                   @endcan

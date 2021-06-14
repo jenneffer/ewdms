@@ -7,7 +7,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class EmailEnquiry extends Mailable
+class Email extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -31,8 +31,8 @@ class EmailEnquiry extends Mailable
     public function build()
     {
         $mail = $this->from($this->demo->sender)
-                    ->subject('EW DMS Enquiries') 
-                    ->view('mails.email-template');
+                    ->subject($this->demo->subject) 
+                    ->view($this->demo->template);
         
         if(!empty($this->demo->attachment)){
             foreach($this->demo->attachment as $attachment){

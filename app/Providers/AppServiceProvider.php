@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Schema;
 use \App\User;
 use \App\Document;
 use Illuminate\Support\Facades\View;
+use DB;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,6 +26,14 @@ class AppServiceProvider extends ServiceProvider
         // trash noti
         $trash = count(Document::where('isExpire',2)->get());
         View::share('trashfull',$trash);
+
+        //nda submission
+        $numSubmission = count(DB::table('users')
+                        ->join('signed_nda', 'signed_nda.user_id', '=', 'users.id')            
+                        ->select('users.*', 'signed_nda.file_name')
+                        ->where('nda_status',false)
+                        ->get());      
+        View::share('submissions',$numSubmission);
     }
 
     /**

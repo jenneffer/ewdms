@@ -27,16 +27,22 @@ class LoginController extends Controller
      */
     // protected $redirectTo = '/home';
     protected function redirectTo()
-    {
+    {        
+        
         if(auth()->user()->hasRole('Admin')) {
             return '/dashboard';
         }
         elseif (auth()->user()->hasRole('Moderator')) {
             return '/users';
         }
-        else {
-            return '/documents';
-        }
+        else { //user 
+            //redirect to first_time_login if NDA submission is 0
+            if(auth()->user()->nda_status == 0){
+                return '/first_time_login';
+            }else{
+                return '/documents';
+            }            
+        }       
     }
 
     /**

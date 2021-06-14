@@ -30,13 +30,13 @@ class DocumentsController extends Controller
         $category = DB::table('category')->where('parent_id',0)->get();
         
       } else {
-        $user_role_id = auth()->user()->role;      
-        $arr_category = $this->getCategoryPermissions($user_role_id); //category id yang user boleh access
-        $permisible_parent_access = array_filter(array_unique($arr_category),'strlen'); //filter duplicate value and remove null value in the array
-        //get the parent category yang user tu boleh access saja
-        $category = DB::table('category')->where('parent_id',0)->whereIn('id', $permisible_parent_access)->get();
+          $user_role_id = auth()->user()->role;      
+          $arr_category = $this->getCategoryPermissions($user_role_id); //category id yang user boleh access
+          $permisible_parent_access = array_filter(array_unique($arr_category),'strlen'); //filter duplicate value and remove null value in the array
+          //get the parent category yang user tu boleh access saja
+          $category = DB::table('category')->where('parent_id',0)->whereIn('id', $permisible_parent_access)->get();
       }
-    
+
       return view('documents.category', compact('category'));
   }
 

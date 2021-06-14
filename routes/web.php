@@ -14,13 +14,25 @@
 Route::get('/',function() {
     // display index page
     if (Auth::check()) {
-      return view('/dashboard');
+      return view('/dashboard');     
     }
     return view('auth.login');
 });
 
 //
 Auth::routes();
+
+// first time login
+Route::get('first_time_login', function() {
+  return view('/first_time_login');
+})->middleware('auth');
+
+
+//download NDA form, approve etc
+Route::resource('nda','NDAController');
+Route::get('/nda/reject/{id}', 'NDAController@reject')->name('nda.reject');
+Route::get('/downloadNDA', 'NDAController@downloadNDA');
+Route::get('/nda/view_nda/{file_name}', 'NDAController@viewNda')->name('nda.view_pdf');
 
 // dashboard
 Route::get('dashboard', function() {
@@ -88,6 +100,7 @@ Route::resource('profile','ProfileController');
 Route::patch('profile','ProfileController@changePassword');
 // registeration requests
 Route::resource('requests','RequestsController');
+
 // backup
 Route::get('backup','BackupController@index');
 Route::get('backup/create','BackupController@create');
