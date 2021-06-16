@@ -41,6 +41,8 @@ class NDAController extends Controller
         $headers = array(
                 'Content-Type: application/pdf',
                 );
+        
+        \Log::addToLog('User ID : '.auth()->user()->id.' has downloaded NDA form');
 
         return \Response::download($file, 'EW Non Disclosure Agreement.pdf', $headers);
     }
@@ -86,6 +88,8 @@ class NDAController extends Controller
                 $objDemo->subject = 'NDA Submission From ' .auth()->user()->name;
                 $objDemo->template = 'mails.nda-submit-template';
                 
+                \Log::addToLog('New NDA Submission from  User ID : '.auth()->user()->id);
+                
                 Mail::to('business@european-wellness.com')->send(new Email($objDemo));
 
                 //auto logout and redirect to login page
@@ -124,9 +128,7 @@ class NDAController extends Controller
     }
 
     public function reject(Request $request){
-        //reject invalid NDA form. Sent email to inform user to resend, check column last_login_at in users table - kasi null balik value supaya redirected to first user login page.. kasi dia link untuk login balik tu system
-        
-           
+        //reject invalid NDA form. Sent email to inform user to resend, check column last_login_at in users table - kasi null balik value supaya redirected to first user login page.. kasi dia link untuk login balik tu system           
         // delete the file on disk
         $filename = NDA::where('user_id', $request->id)->pluck('file_name')->first(); //get the file name from db
         $image_path = public_path()."/images/NDA Signed/$filename";  // Value is not URL but directory file path        
@@ -157,6 +159,7 @@ class NDAController extends Controller
     }
 
     public function viewNda($file_name){
+        // \Log::addToLog('NDA Submission by user ID ' . $request->id . ' was deleted');
         return view('nda.view_nda_pdf', compact('file_name'));
     }
     

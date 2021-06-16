@@ -134,3 +134,13 @@ Breadcrumbs::register('subcategories', function ($breadcrumbs, $id) {
     $breadcrumbs->push($subcat, route('subcat.index', $id));
 });
 
+// NDA Submission
+Breadcrumbs::register('nda_submission', function ($breadcrumbs) {
+    $breadcrumbs->push('NDA Submission', route('nda.index'));
+});
+
+// NDA Submission > View
+Breadcrumbs::register('view_nda', function ($breadcrumbs, $file_name) {
+    $breadcrumbs->parent('nda_submission');
+    $breadcrumbs->push('View NDA', route('nda.view_pdf', $file_name));
+});

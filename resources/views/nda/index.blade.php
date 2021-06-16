@@ -1,6 +1,6 @@
 @extends('layouts.app')
-
 @section('content')
+<link href="{{ asset('css/custom.css') }}" rel="stylesheet" />
 <style media="screen">
   .requests {
       display: flex;
@@ -23,10 +23,11 @@
     @include('inc.sidebar')
   </div>
   <div class="col m11">
-      <div class="row">
-        <h5 class="flow-text"><i class="material-icons">notifications</i> NDA Form Submissions</h5>       
+      {{Breadcrumbs::render('nda_submission')}}    
+      <!-- <div class="row">
+        <h5 class="flow-text"><i class="material-icons">notifications</i> NDA Submissions</h5>       
         <div class="divider"></div> 
-      </div>
+      </div> -->
       
       <div class="row col m11 s12">
         @if(count($submission) > 0)
